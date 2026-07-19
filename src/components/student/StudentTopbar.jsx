@@ -1,0 +1,115 @@
+import { useState } from 'react'
+import { useLocation, Link } from 'react-router-dom'
+import { Menu, Bell, Sun, Moon, ChevronRight, LogOut, User, Settings as SettingsIcon } from 'lucide-react'
+import SearchBar from '../common/SearchBar'
+import Avatar from '../common/Avatar'
+import Dropdown, { DropdownItem, DropdownDivider } from '../common/Dropdown'
+import Badge from '../common/Badge'
+import { useAuth } from '@/context/AuthContext'
+
+const notifications = [
+  { id: 'ntf-1', title: 'New assignment posted in CSE-201' },
+  { id: 'ntf-2', title: 'Library books due tomorrow' },
+]
+
+const labelMap = {
+  student: 'Student', dashboard: 'Dashboard', profile: 'Profile', 
+  attendance: 'Attendance', timetable: 'Timetable',
+  results: 'Results', notices: 'Notices'
+}
+
+function useBreadcrumbs() {
+  const { pathname } = useLocation()
+  const parts = pathname.split('/').filter(Boolean)
+  return parts.map((p, i) => ({
+    label: labelMap[p] || p,
+    to: '/' + parts.slice(0, i + 1).join('/'),
+    isLast: i === parts.length - 1,
+  }))
+}
+
+export default function StudentTopbar({ onOpenMobile }) {
+  const [search, setSearch] = useState('')
+  const [dark, setDark] = useState(true)
+  const crumbs = useBreadcrumbs()
+  const { currentUser, logout } = useAuth()
+
+  const handleLogout = async () => {
+    await logout()
+  }
+
+  const studentName = currentUser?.name || 'Student'
+
+  return (
+    <header className="h-16 shrink-0 flex items-center gap-3 px-4 lg:px-6 border-b border-[var(--color-border)] bg-[var(--color-bg-raised)]/60 backdrop-blur-xl sticky top-0 z-30">
+      <button
+        onClick={onOpenMobile}
+        className="lg:hidden w-9 h-9 rounded-md flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-white/5"
+      >
+        <Menu className="w-5 h-5" />
+      </button>
+
+      <div className="hidden md:flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] mr-2">
+        {crumbs.map((c, i) => (
+          <span key={c.to} className="flex items-center gap-1.5">
+            {i > 0 && <ChevronRight className="w-3.5 h-3.5" />}
+            <Link
+              to={c.to}
+              className={c.isLast ? 'text-[var(--color-text-primary)] font-medium' : 'hover:text-[var(--color-text-secondary)]'}
+            >
+              {c.label}
+            </Link>
+          </span>
+        ))}
+      </div>
+
+      <SearchBar value={search} onChange={setSearch} placeholder="Search courses, notices…" className="max-w-sm hidden sm:block ml-auto" />
+
+      <div className="flex items-center gap-1.5 ml-auto sm:ml-3">
+        <button
+          onClick={() => setDark((d) => !d)}
+          className="w-9 h-9 rounded-md flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-white transition-colors"
+        >
+          {dark ? <Moon className="w-[18px] h-[18px]" /> : <Sun className="w-[18px] h-[18px]" />}
+        </button>
+
+        <Dropdown
+          trigger={
+            <button className="relative w-9 h-9 rounded-md flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-white transition-colors">
+              <Bell className="w-[18px] h-[18px]" />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-rose-400" />
+            </button>
+          }
+          className="min-w-[280px]"
+        >
+          <div className="px-3.5 py-2 flex items-center justify-between">
+            <span className="text-xs font-medium text-[var(--color-text-muted)]">Notifications</span>
+            <Badge tone="danger">{notifications.length}</Badge>
+          </div>
+          {notifications.map((n) => (
+            <DropdownItem key={n.id}>
+              <span className="block truncate">{n.title}</span>
+            </DropdownItem>
+          ))}
+        </Dropdown>
+
+        <Dropdown
+          trigger={
+            <button className="flex items-center gap-2 pl-1.5 pr-1 py-1 rounded-full hover:bg-white/5 transition-colors">
+              <Avatar name={studentName} size="sm" status="online" />
+            </button>
+          }
+        >
+          <div className="px-3.5 py-2.5 border-b border-[var(--color-border)]">
+            <p className="text-sm font-medium">{studentName}</p>
+            <p className="text-xs text-[var(--color-text-muted)]">Student</p>
+          </div>
+          <DropdownItem icon={User}>My Profile</DropdownItem>
+          <DropdownItem icon={SettingsIcon}>Settings</DropdownItem>
+          <DropdownDivider />
+          <DropdownItem icon={LogOut} onClick={handleLogout} className="text-rose-300 hover:text-rose-200 cursor-pointer">Sign out</DropdownItem>
+        </Dropdown>
+      </div>
+    </header>
+  )
+}

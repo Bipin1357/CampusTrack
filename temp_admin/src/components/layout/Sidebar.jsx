@@ -1,0 +1,114 @@
+import { useState } from 'react'
+import { NavLink } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  LayoutDashboard, Users, CalendarCheck, Clock, Building2,
+  FileSpreadsheet, BarChart3, Settings, ChevronsLeft, ChevronsRight, X,
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
+
+const navItems = [
+  { to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/admin/students', label: 'Students', icon: Users },
+  { to: '/admin/attendance', label: 'Attendance', icon: CalendarCheck },
+  { to: '/admin/timetable', label: 'Timetable', icon: Clock },
+  { to: '/admin/departments', label: 'Departments', icon: Building2 },
+  { to: '/admin/examinations', label: 'Examinations', icon: FileSpreadsheet },
+  { to: '/admin/reports', label: 'Reports', icon: BarChart3 },
+  { to: '/admin/settings', label: 'Settings', icon: Settings },
+]
+
+export default function Sidebar({ mobileOpen, onCloseMobile }) {
+  const [collapsed, setCollapsed] = useState(false)
+
+  const content = (
+    <div className="h-full flex flex-col">
+      <div className={cn('flex items-center gap-2.5 px-5 h-16 shrink-0', collapsed && 'px-0 justify-center')}>
+        <div className="w-8 h-8 rounded-lg accent-gradient-bg flex items-center justify-center shrink-0">
+          <svg viewBox="0 0 32 32" className="w-4.5 h-4.5">
+            <path d="M8 20 L16 8 L24 20" stroke="#fff" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="16" cy="24" r="2" fill="#c4b5fd" />
+          </svg>
+        </div>
+        {!collapsed && (
+          <span className="font-display font-semibold text-[15px] tracking-tight whitespace-nowrap">Campus Track</span>
+        )}
+        <button
+          onClick={onCloseMobile}
+          className="ml-auto lg:hidden w-7 h-7 rounded-md flex items-center justify-center text-[var(--color-text-muted)] hover:bg-white/5"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+
+      <nav className="flex-1 overflow-y-auto scrollbar-none px-3 py-3 space-y-0.5">
+        {navItems.map(({ to, label, icon: Icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            onClick={onCloseMobile}
+            className={({ isActive }) =>
+              cn(
+                'track-rail flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-sm)] text-sm transition-colors',
+                isActive
+                  ? 'is-active bg-[var(--color-accent-soft)] text-white font-medium'
+                  : 'text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-white',
+                collapsed && 'justify-center px-0'
+              )
+            }
+          >
+            <Icon className="w-[18px] h-[18px] shrink-0" strokeWidth={2} />
+            {!collapsed && <span className="whitespace-nowrap">{label}</span>}
+          </NavLink>
+        ))}
+      </nav>
+
+      <div className="p-3 shrink-0 hidden lg:block">
+        <button
+          onClick={() => setCollapsed((c) => !c)}
+          className="w-full flex items-center gap-2 justify-center py-2 rounded-[var(--radius-sm)] text-[var(--color-text-muted)] hover:bg-white/5 hover:text-white transition-colors text-xs"
+        >
+          {collapsed ? <ChevronsRight className="w-4 h-4" /> : (<><ChevronsLeft className="w-4 h-4" /> Collapse</>)}
+        </button>
+      </div>
+    </div>
+  )
+
+  return (
+    <>
+      {/* Desktop */}
+      <aside
+        className={cn(
+          'hidden lg:block shrink-0 border-r border-[var(--color-border)] bg-[var(--color-bg-raised)]/60 backdrop-blur-xl transition-all duration-200',
+          collapsed ? 'w-[76px]' : 'w-64'
+        )}
+      >
+        {content}
+      </aside>
+
+      {/* Mobile drawer */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+              onClick={onCloseMobile}
+            />
+            <motion.aside
+              initial={{ x: -280 }}
+              animate={{ x: 0 }}
+              exit={{ x: -280 }}
+              transition={{ type: 'tween', duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+              className="fixed top-0 left-0 h-full w-64 z-50 lg:hidden bg-[var(--color-bg-raised)] border-r border-[var(--color-border)]"
+            >
+              {content}
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
