@@ -9,30 +9,30 @@ import { MoreVertical, Eye, Pencil, Trash2, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const statusTone = { Active: 'success', Inactive: 'neutral' };
-const PAGE_SIZE = 8;
-
-export default function StudentTable({ students, onEdit, onDelete }) {
+export default function StudentTable({ 
+  students, 
+  onEdit, 
+  onDelete,
+  page,
+  totalPages,
+  totalItems,
+  pageSize,
+  onPageChange,
+  onPageSizeChange,
+  sortKey,
+  sortDir,
+  onSort
+}) {
   const navigate = useNavigate();
-  const [sortKey, setSortKey] = useState('full_name');
-  const [sortDir, setSortDir] = useState('asc');
-  const [page, setPage] = useState(1);
-
-  const sorted = useMemo(() => {
-    const copy = [...students];
-    copy.sort((a, b) => {
-      const av = a[sortKey], bv = b[sortKey];
-      const cmp = String(av || '').localeCompare(String(bv || ''));
-      return sortDir === 'asc' ? cmp : -cmp;
-    });
-    return copy;
-  }, [students, sortKey, sortDir]);
-
-  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
-  const pageItems = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   function toggleSort(key) {
-    if (sortKey === key) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-    else { setSortKey(key); setSortDir('asc'); }
+    if (onSort) {
+      if (sortKey === key) {
+        onSort(key, sortDir === 'asc' ? 'desc' : 'asc');
+      } else {
+        onSort(key, 'asc');
+      }
+    }
   }
 
   if (!students || !students.length) {
@@ -53,7 +53,7 @@ export default function StudentTable({ students, onEdit, onDelete }) {
           </TR>
         </THead>
         <TBody>
-          {pageItems.map((s) => (
+          {students.map((s) => (
             <TR key={s.id}>
               <TD>
                 <div className="flex items-center gap-3">
@@ -92,7 +92,14 @@ export default function StudentTable({ students, onEdit, onDelete }) {
           ))}
         </TBody>
       </Table>
-      <Pagination page={page} totalPages={totalPages} onChange={setPage} totalItems={sorted.length} pageSize={PAGE_SIZE} />
+      <Pagination 
+        page={page} 
+        totalPages={totalPages} 
+        onChange={onPageChange} 
+        totalItems={totalItems} 
+        pageSize={pageSize}
+        onPageSizeChange={onPageSizeChange}
+      />
     </div>
   );
 }

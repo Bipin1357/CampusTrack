@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Users, Clock, MapPin, Edit2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, Users, Clock, MapPin, Edit2, Monitor } from 'lucide-react';
 import { courseService } from '../../../services/courseService';
 import Card from '../../../components/common/Card';
 import Button from '../../../components/common/Button';
@@ -122,6 +122,15 @@ export default function CourseDetails() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-[var(--color-accent-violet)]/10 rounded-lg">
+                  <Monitor className="w-5 h-5 text-[var(--color-accent-violet)]" />
+                </div>
+                <div>
+                  <p className="text-xs text-[var(--color-text-muted)]">Type</p>
+                  <p className="text-sm font-medium text-white">{course.course_type || '-'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-[var(--color-accent-violet)]/10 rounded-lg">
                   <MapPin className="w-5 h-5 text-[var(--color-accent-violet)]" />
                 </div>
                 <div>
@@ -135,7 +144,7 @@ export default function CourseDetails() {
                 </div>
                 <div>
                   <p className="text-xs text-[var(--color-text-muted)]">Semester</p>
-                  <p className="text-sm font-medium text-white">{course.semester}</p>
+                  <p className="text-sm font-medium text-white">Semester {course.semester}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">

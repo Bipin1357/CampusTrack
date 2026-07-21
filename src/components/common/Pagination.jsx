@@ -1,8 +1,10 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-export default function Pagination({ page, totalPages, onChange, totalItems, pageSize }) {
-  if (totalPages <= 1) return null
+export default function Pagination({ page, totalPages, onChange, totalItems, pageSize, onPageSizeChange, pageSizeOptions = [10, 25, 50] }) {
+  if (totalItems === 0) return null;
+  // Always render pagination if onPageSizeChange is provided, otherwise only if totalPages > 1
+  if (totalPages <= 1 && !onPageSizeChange) return null
 
   const pages = []
   const window = 1
@@ -16,11 +18,27 @@ export default function Pagination({ page, totalPages, onChange, totalItems, pag
 
   return (
     <div className="flex items-center justify-between flex-wrap gap-3 pt-4">
-      {totalItems != null && (
-        <p className="text-xs text-[var(--color-text-muted)]">
-          Showing {Math.min((page - 1) * pageSize + 1, totalItems)}–{Math.min(page * pageSize, totalItems)} of {totalItems}
-        </p>
-      )}
+      <div className="flex items-center gap-3 text-xs text-[var(--color-text-muted)]">
+        {totalItems != null && (
+          <p>
+            Showing {Math.min((page - 1) * pageSize + 1, totalItems)}–{Math.min(page * pageSize, totalItems)} of {totalItems}
+          </p>
+        )}
+        {onPageSizeChange && (
+          <div className="flex items-center gap-2">
+            <span>Rows per page:</span>
+            <select
+              value={pageSize}
+              onChange={(e) => onPageSizeChange(Number(e.target.value))}
+              className="bg-[var(--color-background)] border border-[var(--color-border)] rounded px-1 py-0.5 text-xs text-[var(--color-text-primary)] focus:outline-none"
+            >
+              {pageSizeOptions.map(opt => (
+                <option key={opt} value={opt}>{opt}</option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
       <div className="flex items-center gap-1">
         <button
           disabled={page === 1}

@@ -2,16 +2,22 @@ import { useState, useEffect, useCallback } from 'react';
 import { studentService } from '../services/studentService';
 import toast from 'react-hot-toast';
 
-export function useStudents() {
+export function useStudents(options = {}) {
   const [students, setStudents] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // We stringify options so useCallback dependencies are stable
+  const optionsString = JSON.stringify(options);
 
   const fetchStudents = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await studentService.getStudents();
+      const parsedOptions = JSON.parse(optionsString);
+      const { data, count } = await studentService.getStudents(parsedOptions);
       setStudents(data);
+      setTotalCount(count);
       setError(null);
     } catch (err) {
       console.error('Error fetching students:', err);
@@ -20,7 +26,7 @@ export function useStudents() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [optionsString]);
 
   useEffect(() => {
     fetchStudents();
@@ -66,6 +72,7 @@ export function useStudents() {
 
   return {
     students,
+    totalCount,
     loading,
     error,
     addStudent,

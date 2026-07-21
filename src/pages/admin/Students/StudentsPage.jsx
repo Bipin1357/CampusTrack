@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Download, RefreshCcw } from 'lucide-react';
 import Card from '../../../components/common/Card';
 import Button from '../../../components/common/Button';
@@ -12,50 +12,48 @@ import DeleteStudentModal from '../../../components/students/DeleteStudentModal'
 import { useStudents } from '../../../hooks/useStudents';
 
 export default function StudentsPage() {
-  const { students, loading, error, addStudent, editStudent, removeStudent, refreshStudents } = useStudents();
-  
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [department, setDepartment] = useState('All Departments');
   const [semester, setSemester] = useState('All Semesters');
   const [section, setSection] = useState('All Sections');
   const [status, setStatus] = useState('All Status');
   const [sort, setSort] = useState('Recently Added');
   
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [tableSortKey, setTableSortKey] = useState('');
+  const [tableSortDir, setTableSortDir] = useState('');
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
 
-  const filteredStudents = useMemo(() => {
-    const filtered = students.filter((s) => {
-      const matchesSearch = 
-        s.full_name.toLowerCase().includes(search.toLowerCase()) || 
-        s.student_id.toLowerCase().includes(search.toLowerCase()) ||
-        s.email.toLowerCase().includes(search.toLowerCase());
-      
-      const matchesDept = department === 'All Departments' || s.department === department;
-      const matchesSem = semester === 'All Semesters' || s.semester === semester;
-      const matchesSec = section === 'All Sections' || s.section === section;
-      const matchesStatus = status === 'All Status' || s.status === status;
-      
-      return matchesSearch && matchesDept && matchesSem && matchesSec && matchesStatus;
-    });
-    
-    // Apply sorting
-    if (sort === 'Name (A-Z)') {
-      filtered.sort((a, b) => a.full_name.localeCompare(b.full_name));
-    } else if (sort === 'Name (Z-A)') {
-      filtered.sort((a, b) => b.full_name.localeCompare(a.full_name));
-    } else if (sort === 'Oldest') {
-      filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-    } else if (sort === 'Semester') {
-      filtered.sort((a, b) => (a.semester || '').localeCompare(b.semester || ''));
-    } else {
-      // Default: Recently Added
-      filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    }
-    
-    return filtered;
-  }, [students, search, department, semester, section, status, sort]);
+  // Debounce search
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [search]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [department, semester, section, status, sort, pageSize]);
+
+  const { students, totalCount, loading, error, addStudent, editStudent, removeStudent, refreshStudents } = useStudents({
+    page,
+    pageSize,
+    search: debouncedSearch,
+    filters: { department, semester, section, status },
+    sortKey: sort,
+    tableSortKey,
+    tableSortDir,
+  });
+
+  const totalPages = Math.max(1, Math.ceil((totalCount || 0) / pageSize));
 
   const handleAddClick = () => {
     console.log("Add Student clicked");
@@ -115,7 +113,7 @@ export default function StudentsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl font-semibold">Students</h1>
-          <p className="text-sm text-[var(--color-text-secondary)] mt-1">{students.length} students enrolled across all departments</p>
+          <p className="text-sm text-[var(--color-text-secondary)] mt-1">{totalCount || 0} students enrolled across all departments</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="secondary" icon={RefreshCcw} size="md" onClick={refreshStudents}>Refresh</Button>
@@ -135,9 +133,22 @@ export default function StudentsPage() {
           sort={sort} setSort={setSort}
         />
         <StudentTable 
-          students={filteredStudents} 
+          students={students} 
           onEdit={handleEditClick}
           onDelete={handleDeleteClick}
+          page={page}
+          totalPages={totalPages}
+          totalItems={totalCount}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={setPageSize}
+          sortKey={tableSortKey}
+          sortDir={tableSortDir}
+          onSort={(key, dir) => {
+            setTableSortKey(key);
+            setTableSortDir(dir);
+            setPage(1);
+          }}
         />
       </Card>
 

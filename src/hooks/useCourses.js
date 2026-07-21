@@ -2,16 +2,22 @@ import { useState, useEffect, useCallback } from 'react';
 import { courseService } from '../services/courseService';
 import toast from 'react-hot-toast';
 
-export function useCourses() {
+export function useCourses(options = {}) {
   const [courses, setCourses] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // We stringify options so useCallback dependencies are stable
+  const optionsString = JSON.stringify(options);
 
   const fetchCourses = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await courseService.getCourses();
+      const parsedOptions = JSON.parse(optionsString);
+      const { data, count } = await courseService.getCourses(parsedOptions);
       setCourses(data);
+      setTotalCount(count);
       setError(null);
     } catch (err) {
       console.error('Error fetching courses:', err);
@@ -20,7 +26,7 @@ export function useCourses() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [optionsString]);
 
   useEffect(() => {
     fetchCourses();
@@ -53,19 +59,21 @@ export function useCourses() {
   };
 
   const removeCourse = async (id) => {
+    console.log("useCourses.removeCourse called with id:", id);
     try {
       await courseService.deleteCourse(id);
       setCourses(prev => prev.filter(c => c.id !== id));
       toast.success('Course deleted successfully');
     } catch (err) {
       console.error('Error deleting course:', err);
-      toast.error('Failed to delete course');
+      toast.error(`Failed to delete course: ${err.message || 'Unknown error'}`);
       throw err;
     }
   };
 
   return {
     courses,
+    totalCount,
     loading,
     error,
     addCourse,

@@ -1,78 +1,108 @@
 import { MoreVertical, Edit2, Trash2, Eye } from 'lucide-react';
 import Badge from '../common/Badge';
 import Button from '../common/Button';
-import Dropdown from '../common/Dropdown';
+import Dropdown, { DropdownItem } from '../common/Dropdown';
+import Pagination from '../common/Pagination';
+import EmptyState from '../common/EmptyState';
+import { Table, THead, TBody, TR, TH, TD } from '../common/Table';
 import { useNavigate } from 'react-router-dom';
 
-export default function CourseTable({ courses, onEdit, onDelete }) {
+export default function CourseTable({ 
+  courses, 
+  onEdit, 
+  onDelete,
+  page,
+  totalPages,
+  totalItems,
+  pageSize,
+  onPageChange,
+  onPageSizeChange,
+  sortKey,
+  sortDir,
+  onSort 
+}) {
   const navigate = useNavigate();
+
+  function toggleSort(key) {
+    if (onSort) {
+      if (sortKey === key) {
+        onSort(key, sortDir === 'asc' ? 'desc' : 'asc');
+      } else {
+        onSort(key, 'asc');
+      }
+    }
+  }
 
   if (!courses || courses.length === 0) {
     return (
-      <div className="text-center py-12 text-[var(--color-text-secondary)]">
-        No courses found matching your criteria.
-      </div>
+      <EmptyState 
+        title="No courses found" 
+        description="Try adjusting your search or filters." 
+      />
     );
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left border-collapse">
-        <thead>
-          <tr className="border-b border-[var(--color-border)]">
-            <th className="px-4 py-3 text-sm font-medium text-[var(--color-text-secondary)]">Course Code</th>
-            <th className="px-4 py-3 text-sm font-medium text-[var(--color-text-secondary)]">Course Name</th>
-            <th className="px-4 py-3 text-sm font-medium text-[var(--color-text-secondary)]">Credits</th>
-            <th className="px-4 py-3 text-sm font-medium text-[var(--color-text-secondary)]">Department</th>
-            <th className="px-4 py-3 text-sm font-medium text-[var(--color-text-secondary)]">Semester</th>
-            <th className="px-4 py-3 text-sm font-medium text-[var(--color-text-secondary)]">Status</th>
-            <th className="px-4 py-3 text-sm font-medium text-[var(--color-text-secondary)] text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-[var(--color-border)]">
+    <div>
+      <Table>
+        <THead>
+          <TR>
+            <TH sortable sortDir={sortKey === 'course_code' ? sortDir : null} onSort={() => toggleSort('course_code')}>Course Code</TH>
+            <TH sortable sortDir={sortKey === 'course_name' ? sortDir : null} onSort={() => toggleSort('course_name')}>Course Name</TH>
+            <TH sortable sortDir={sortKey === 'credits' ? sortDir : null} onSort={() => toggleSort('credits')}>Credits</TH>
+            <TH>Type</TH>
+            <TH sortable sortDir={sortKey === 'department' ? sortDir : null} onSort={() => toggleSort('department')}>Department</TH>
+            <TH sortable sortDir={sortKey === 'semester' ? sortDir : null} onSort={() => toggleSort('semester')}>Semester</TH>
+            <TH sortable sortDir={sortKey === 'status' ? sortDir : null} onSort={() => toggleSort('status')}>Status</TH>
+            <TH></TH>
+          </TR>
+        </THead>
+        <TBody>
           {courses.map((course) => (
-            <tr key={course.id} className="hover:bg-white/5 transition-colors group">
-              <td className="px-4 py-3 text-sm font-medium text-[var(--color-text)]">{course.course_code}</td>
-              <td className="px-4 py-3 text-sm text-[var(--color-text-secondary)]">{course.course_name}</td>
-              <td className="px-4 py-3 text-sm text-[var(--color-text-secondary)]">{course.credits}</td>
-              <td className="px-4 py-3 text-sm text-[var(--color-text-secondary)]">{course.department}</td>
-              <td className="px-4 py-3 text-sm text-[var(--color-text-secondary)]">{course.semester}</td>
-              <td className="px-4 py-3 text-sm">
-                <Badge variant={course.status === 'Active' ? 'success' : 'default'}>
+            <TR key={course.id}>
+              <TD className="font-medium text-[var(--color-text)]">{course.course_code}</TD>
+              <TD className="text-[var(--color-text-secondary)]">{course.course_name}</TD>
+              <TD className="text-[var(--color-text-secondary)]">{course.credits}</TD>
+              <TD className="text-[var(--color-text-secondary)]">{course.course_type || '-'}</TD>
+              <TD className="text-[var(--color-text-secondary)]">{course.department}</TD>
+              <TD className="text-[var(--color-text-secondary)]">Semester {course.semester}</TD>
+              <TD>
+                <Badge variant={course.status === 'Active' ? 'success' : 'default'} dot>
                   {course.status}
                 </Badge>
-              </td>
-              <td className="px-4 py-3 text-right">
+              </TD>
+              <TD>
                 <Dropdown
+                  align="right"
                   trigger={
-                    <Button variant="secondary" size="sm" className="px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button className="w-7 h-7 rounded-md flex items-center justify-center text-[var(--color-text-muted)] hover:bg-white/5 hover:text-white">
                       <MoreVertical className="w-4 h-4" />
-                    </Button>
+                    </button>
                   }
-                  items={[
-                    {
-                      label: 'View Details',
-                      icon: <Eye className="w-4 h-4" />,
-                      onClick: () => navigate(`/admin/courses/${course.id}`),
-                    },
-                    {
-                      label: 'Edit Course',
-                      icon: <Edit2 className="w-4 h-4" />,
-                      onClick: () => onEdit(course),
-                    },
-                    {
-                      label: 'Delete Course',
-                      icon: <Trash2 className="w-4 h-4 text-red-500" />,
-                      onClick: () => onDelete(course),
-                      danger: true,
-                    },
-                  ]}
-                />
-              </td>
-            </tr>
+                >
+                  <DropdownItem icon={Eye} onClick={() => navigate(`/admin/courses/${course.id}`)}>
+                    View Details
+                  </DropdownItem>
+                  <DropdownItem icon={Edit2} onClick={() => onEdit(course)}>
+                    Edit Course
+                  </DropdownItem>
+                  <DropdownItem icon={Trash2} className="text-rose-300 hover:text-rose-200" onClick={() => onDelete(course)}>
+                    Delete Course
+                  </DropdownItem>
+                </Dropdown>
+              </TD>
+            </TR>
           ))}
-        </tbody>
-      </table>
+        </TBody>
+      </Table>
+      <Pagination 
+        page={page} 
+        totalPages={totalPages} 
+        onChange={onPageChange} 
+        totalItems={totalItems} 
+        pageSize={pageSize}
+        onPageSizeChange={onPageSizeChange}
+      />
     </div>
   );
 }

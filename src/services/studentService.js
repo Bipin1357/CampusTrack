@@ -2,14 +2,36 @@ import { supabase } from '../supabase/supabaseClient';
 import { supabaseAdmin } from '../supabase/supabaseAdmin';
 
 export const studentService = {
-  async getStudents() {
-    const { data, error } = await supabase
-      .from('students')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
+  async getStudents(options = {}) {
+    const {
+      page = 1,
+      pageSize = 10,
+      search = '',
+      filters = {},
+      sortKey = 'created_at',
+      sortDir = 'desc'
+    } = options;
+
+    console.log("Search received:", search);
+
+    let query = supabase
+      .from("students")
+      .select("*", { count: "exact" });
+
+    if (search) {
+      console.log("Applying search");
+      query = query.or(
+        `full_name.ilike.%${search}%,email.ilike.%${search}%,student_id.ilike.%${search}%`
+      );
+    }
+
+    const { data, error, count } = await query;
+
+    console.log({ data, error, count });
+
     if (error) throw error;
-    return data;
+
+    return { data, count };
   },
 
   async getStudentById(id) {
