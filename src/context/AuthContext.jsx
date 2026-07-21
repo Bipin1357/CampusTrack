@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
             .from("users")
             .select("*")
             .eq("id", user.id)
-            .single();
+            .maybeSingle();
 
           console.log("========== PROFILE FETCH ==========");
           console.log("User ID:", user.id);
@@ -43,6 +43,10 @@ export const AuthProvider = ({ children }) => {
 
           if (userError) {
             throw userError;
+          }
+          
+          if (!userData) {
+            throw new Error("User profile not found in users table.");
           }
 
           console.log("========== USER DEBUG ==========");

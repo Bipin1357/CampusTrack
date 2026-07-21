@@ -1,5 +1,6 @@
 import React from 'react'
 import { CalendarCheck, BookOpen, Clock, Bell, FileText, UserCheck } from 'lucide-react'
+import TodayClasses from '../../components/student/TodayClasses'
 
 export default function StudentDashboard() {
   const cards = [
@@ -36,9 +37,7 @@ export default function StudentDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-[20px] p-6 h-64 flex items-center justify-center">
-          <p className="text-[var(--color-text-muted)]">Class Schedule Timeline Placeholder</p>
-        </div>
+        <TodayClasses />
         <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-[20px] p-6 h-64 flex items-center justify-center">
           <p className="text-[var(--color-text-muted)]">Recent Announcements Placeholder</p>
         </div>

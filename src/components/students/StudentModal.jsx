@@ -5,7 +5,16 @@ import Modal from '../common/Modal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../common/Select';
 
 const departments = ['Computer Science', 'Business', 'Engineering', 'Arts', 'Science'];
-const semesters = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6', 'Semester 7', 'Semester 8'];
+const semesters = [
+  { label: 'Semester 1', value: '1' },
+  { label: 'Semester 2', value: '2' },
+  { label: 'Semester 3', value: '3' },
+  { label: 'Semester 4', value: '4' },
+  { label: 'Semester 5', value: '5' },
+  { label: 'Semester 6', value: '6' },
+  { label: 'Semester 7', value: '7' },
+  { label: 'Semester 8', value: '8' }
+];
 const sections = ['A', 'B', 'C'];
 const genders = ['Male', 'Female', 'Other'];
 const statuses = ['Active', 'Inactive'];
@@ -19,7 +28,7 @@ export default function StudentModal({ isOpen, onClose, onSubmit, student, allSt
     gender: genders[0],
     dob: '',
     department: departments[0],
-    semester: semesters[0],
+    semester: semesters[0].value,
     section: sections[0],
     status: statuses[0],
     password: '', // Only for creation
@@ -32,6 +41,7 @@ export default function StudentModal({ isOpen, onClose, onSubmit, student, allSt
     if (student) {
       setFormData({
         ...student,
+        semester: String(student.semester ?? semesters[0].value),
         password: '',
         confirmPassword: '',
       });
@@ -44,7 +54,7 @@ export default function StudentModal({ isOpen, onClose, onSubmit, student, allSt
         gender: genders[0],
         dob: '',
         department: departments[0],
-        semester: semesters[0],
+        semester: semesters[0].value,
         section: sections[0],
         status: statuses[0],
         password: '',
@@ -162,7 +172,7 @@ export default function StudentModal({ isOpen, onClose, onSubmit, student, allSt
                   <SelectValue placeholder="Select semester" />
                 </SelectTrigger>
                 <SelectContent>
-                  {semesters.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  {semesters.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>

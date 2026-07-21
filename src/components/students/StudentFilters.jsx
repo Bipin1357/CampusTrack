@@ -3,7 +3,17 @@ import { SlidersHorizontal } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../common/Select';
 
 const departments = ['All Departments', 'Computer Science', 'Business', 'Engineering', 'Arts', 'Science'];
-const semesters = ['All Semesters', 'Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6', 'Semester 7', 'Semester 8'];
+const semesters = [
+  { label: 'All Semesters', value: 'All Semesters' },
+  { label: 'Semester 1', value: '1' },
+  { label: 'Semester 2', value: '2' },
+  { label: 'Semester 3', value: '3' },
+  { label: 'Semester 4', value: '4' },
+  { label: 'Semester 5', value: '5' },
+  { label: 'Semester 6', value: '6' },
+  { label: 'Semester 7', value: '7' },
+  { label: 'Semester 8', value: '8' }
+];
 const sections = ['All Sections', 'A', 'B', 'C'];
 const statuses = ['All Status', 'Active', 'Inactive'];
 
@@ -43,7 +53,7 @@ export default function StudentFilters({
           </SelectTrigger>
           <SelectContent>
             {semesters.map((s) => (
-              <SelectItem key={s} value={s}>{s}</SelectItem>
+              <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
             ))}
           </SelectContent>
         </Select>
