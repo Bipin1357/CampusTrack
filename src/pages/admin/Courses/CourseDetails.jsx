@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Users, Clock, MapPin, Edit2, Monitor } from 'lucide-react';
+import { ArrowLeft, BookOpen, Users, Clock, MapPin, Edit2, Monitor, Plus } from 'lucide-react';
 import { courseService } from '../../../services/courseService';
+import { enrollmentService } from '../../../services/enrollmentService';
+import toast from 'react-hot-toast';
 import Card from '../../../components/common/Card';
 import Button from '../../../components/common/Button';
 import Badge from '../../../components/common/Badge';
 import Loader from '../../../components/common/Loader';
 import CourseModal from '../../../components/courses/CourseModal';
+import EnrolledStudentsTable from '../../../components/courses/EnrolledStudentsTable';
+import EnrollStudentsModal from '../../../components/courses/EnrollStudentsModal';
 import { useCourses } from '../../../hooks/useCourses';
 
 export default function CourseDetails() {
@@ -19,6 +23,20 @@ export default function CourseDetails() {
   const [error, setError] = useState(null);
   
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [enrollments, setEnrollments] = useState([]);
+  const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
+  const [availableStudents, setAvailableStudents] = useState([]);
+  const [loadingStudents, setLoadingStudents] = useState(false);
+
+  const fetchEnrollments = async () => {
+    try {
+      const data = await enrollmentService.getEnrollmentsByCourse(id);
+      setEnrollments(data);
+    } catch (err) {
+      toast.error('Failed to load enrollments');
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -34,7 +52,10 @@ export default function CourseDetails() {
       }
     };
     
-    if (id) fetchCourse();
+    if (id) {
+      fetchCourse();
+      fetchEnrollments();
+    }
   }, [id]);
 
   const handleEditSubmit = async (courseData) => {
@@ -44,6 +65,41 @@ export default function CourseDetails() {
       setIsEditModalOpen(false);
     } catch (err) {
       // Handled in hook
+    }
+  };
+
+  const handleOpenEnrollModal = async () => {
+    setIsEnrollModalOpen(true);
+    setLoadingStudents(true);
+    try {
+      const students = await enrollmentService.getAvailableStudents(id);
+      setAvailableStudents(students);
+    } catch (err) {
+      toast.error('Failed to load available students');
+    } finally {
+      setLoadingStudents(false);
+    }
+  };
+
+  const handleEnrollSubmit = async (studentIds) => {
+    try {
+      await enrollmentService.enrollStudents(id, studentIds);
+      toast.success(`Successfully enrolled ${studentIds.length} student(s)`);
+      setIsEnrollModalOpen(false);
+      fetchEnrollments();
+    } catch (err) {
+      toast.error(err.message || 'Failed to enroll students');
+    }
+  };
+
+  const handleRemoveEnrollment = async (enrollmentId) => {
+    if (!window.confirm('Are you sure you want to remove this student from the course?')) return;
+    try {
+      await enrollmentService.removeEnrollment(enrollmentId);
+      toast.success('Student removed from course');
+      fetchEnrollments();
+    } catch (err) {
+      toast.error('Failed to remove student');
     }
   };
 
@@ -97,10 +153,16 @@ export default function CourseDetails() {
           </Card>
           
           <Card className="p-6">
-            <h2 className="text-lg font-semibold mb-4 text-white">Enrolled Students</h2>
-            <div className="flex items-center justify-center h-32 border border-dashed border-[var(--color-border)] rounded-lg">
-              <p className="text-sm text-[var(--color-text-muted)]">Student enrollment data will appear here.</p>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-white">Enrolled Students</h2>
+              <Button size="sm" icon={Plus} onClick={handleOpenEnrollModal}>
+                Enroll Students
+              </Button>
             </div>
+            <EnrolledStudentsTable 
+              enrollments={enrollments} 
+              onRemove={handleRemoveEnrollment} 
+            />
           </Card>
         </div>
 
@@ -167,6 +229,14 @@ export default function CourseDetails() {
         onSubmit={handleEditSubmit}
         course={course}
         title="Edit Course"
+      />
+
+      <EnrollStudentsModal
+        isOpen={isEnrollModalOpen}
+        onClose={() => setIsEnrollModalOpen(false)}
+        onSubmit={handleEnrollSubmit}
+        students={availableStudents}
+        loading={loadingStudents}
       />
     </div>
   );
