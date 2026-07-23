@@ -6,7 +6,9 @@ import Button from '../../components/common/Button';
 import Badge from '../../components/common/Badge';
 import Loader from '../../components/common/Loader';
 import EmptyState from '../../components/common/EmptyState';
-import { Clock, MapPin, Calendar, UserCheck, XCircle } from 'lucide-react';
+import StatCard from '../../components/common/StatCard';
+import AttendanceLineChart from '../../components/charts/AttendanceLineChart';
+import { Clock, MapPin, Calendar, UserCheck, XCircle, AlertCircle, TrendingUp, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function StudentAttendance() {
@@ -14,6 +16,11 @@ export default function StudentAttendance() {
   const [classes, setClasses] = useState([]);
   const [attendanceRecords, setAttendanceRecords] = useState({});
   const [loading, setLoading] = useState(true);
+  
+  // New Stats State
+  const [stats, setStats] = useState({ present: 0, absent: 0, late: 0, rate: 100, total: 0 });
+  const [subjectBreakdown, setSubjectBreakdown] = useState([]);
+  const [monthlyTrend, setMonthlyTrend] = useState([]);
   
   // Timer to force re-render for countdowns
   const [now, setNow] = useState(new Date());
@@ -27,12 +34,18 @@ export default function StudentAttendance() {
     if (!currentUser?.uid) return;
     try {
       setLoading(true);
-      const [todayClasses, todayAttendance] = await Promise.all([
+      const [todayClasses, todayAttendance, statsData, breakdown, trend] = await Promise.all([
         attendanceService.getTodayClasses(currentUser.uid),
-        attendanceService.getTodayAttendance(currentUser.uid)
+        attendanceService.getTodayAttendance(currentUser.uid),
+        attendanceService.getStudentAttendanceStats(currentUser.uid),
+        attendanceService.getStudentSubjectBreakdown(currentUser.uid),
+        attendanceService.getStudentMonthlyChart(currentUser.uid)
       ]);
       setClasses(todayClasses);
       setAttendanceRecords(todayAttendance);
+      setStats(statsData);
+      setSubjectBreakdown(breakdown);
+      setMonthlyTrend(trend);
     } catch (error) {
       toast.error('Failed to load attendance data');
     } finally {
@@ -70,7 +83,6 @@ export default function StudentAttendance() {
     let actionElement = null;
 
     if (record) {
-      // Already marked
       badgeTone = 'success';
       badgeText = 'Present';
       actionElement = (
@@ -84,7 +96,6 @@ export default function StudentAttendance() {
         </div>
       );
     } else if (status === 'Closed') {
-      // Window closed, no record -> Absent
       badgeTone = 'danger';
       badgeText = 'Absent';
       actionElement = (
@@ -96,8 +107,7 @@ export default function StudentAttendance() {
         </div>
       );
     } else if (isOpen) {
-      // Window Open
-      badgeTone = 'warning'; // Using warning tone (yellowish) to draw attention
+      badgeTone = 'warning'; 
       badgeText = 'Window Open';
       actionElement = (
         <div className="flex flex-col items-center sm:items-end gap-2">
@@ -110,11 +120,8 @@ export default function StudentAttendance() {
         </div>
       );
     } else if (status === 'Upcoming') {
-      // Upcoming
       badgeTone = 'info';
       badgeText = 'Upcoming';
-      
-      // If it opens in less than an hour, show countdown
       if (diffSeconds < 3600) {
          actionElement = (
           <div className="flex flex-col items-center sm:items-end">
@@ -181,25 +188,81 @@ export default function StudentAttendance() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="font-display text-2xl font-semibold">Today's Attendance</h1>
+        <h1 className="font-display text-2xl font-semibold">Attendance Overview</h1>
         <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-          Mark your attendance for {attendanceService.getCurrentWeekday()}'s classes.
+          Monitor your attendance history and view today's schedule.
         </p>
       </div>
 
-      {classes.length === 0 ? (
-        <EmptyState 
-          icon={Calendar} 
-          title="No classes scheduled for today" 
-          description="You don't have any classes in your timetable for today. Enjoy your day!" 
-        />
-      ) : (
-        <div className="space-y-4">
-          {classes.map(renderClassCard)}
+      {stats.total > 0 && stats.rate < 75 && (
+        <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 p-4 rounded-[var(--radius-sm)] flex items-start gap-3 animate-in slide-in-from-top-2">
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+          <div>
+            <h4 className="font-semibold text-rose-300">Low Attendance Warning</h4>
+            <p className="text-sm mt-1">Your overall attendance is {stats.rate}%, which is below the required 75% threshold. Please ensure you attend upcoming classes.</p>
+          </div>
         </div>
       )}
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <StatCard label="Overall Attendance" value={stats.rate} unit="%" icon={TrendingUp} />
+        <StatCard label="Classes Attended" value={stats.present + stats.late} icon={CheckCircle} />
+        <StatCard label="Classes Missed" value={stats.absent} icon={XCircle} />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="p-5 flex flex-col h-full">
+          <h3 className="font-display text-lg font-semibold mb-4">Subject Breakdown</h3>
+          {subjectBreakdown.length === 0 ? (
+            <div className="flex-1 flex items-center justify-center">
+              <p className="text-sm text-[var(--color-text-muted)]">No subject data available yet.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {subjectBreakdown.map((sub, i) => (
+                <div key={i}>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-white font-medium">{sub.subject}</span>
+                    <span className={sub.rate < 75 ? 'text-rose-400 font-semibold' : 'text-emerald-400 font-semibold'}>{sub.rate}%</span>
+                  </div>
+                  <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-1000 ${sub.rate < 75 ? 'bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.6)]' : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]'}`} 
+                      style={{ width: `${Math.max(sub.rate, 2)}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-[var(--color-text-muted)] mt-1.5">{sub.attended} of {sub.total} classes attended</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+
+        <Card className="p-5 flex flex-col h-full">
+          <h3 className="font-display text-lg font-semibold mb-4">Monthly Trend</h3>
+          <div className="flex-1 h-64 min-h-[250px] -ml-2">
+            <AttendanceLineChart data={monthlyTrend.length > 0 ? monthlyTrend : [{ month: 'Jan', rate: 0 }]} />
+          </div>
+        </Card>
+      </div>
+
+      <div className="pt-4 border-t border-white/5">
+        <h2 className="font-display text-xl font-semibold mb-6">Today's Classes</h2>
+        
+        {classes.length === 0 ? (
+          <EmptyState 
+            icon={Calendar} 
+            title="No classes scheduled for today" 
+            description="You don't have any classes in your timetable for today. Enjoy your day!" 
+          />
+        ) : (
+          <div className="space-y-4">
+            {classes.map(renderClassCard)}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

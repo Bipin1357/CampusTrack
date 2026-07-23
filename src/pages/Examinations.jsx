@@ -9,8 +9,9 @@ import { Table, THead, TBody, TR, TH, TD } from '@/components/common/Table'
 import { examinations } from '@/data/examinationsData'
 import { formatDate } from '@/lib/utils'
 import { FileSpreadsheet } from 'lucide-react'
+import { departments as departmentList } from '@/data/departments'
 
-const departments = ['All Departments', ...new Set(examinations.map((e) => e.department))]
+const departments = ['All Departments', ...departmentList]
 const statuses = ['All Status', 'Scheduled', 'Ongoing', 'Completed']
 const statusTone = { Scheduled: 'info', Ongoing: 'warning', Completed: 'success' }
 
@@ -73,7 +74,7 @@ export default function Examinations() {
                 <TR key={e.id}>
                   <TD className="font-medium text-[var(--color-text-primary)]">{e.course}</TD>
                   <TD className="text-[var(--color-text-secondary)]">{e.department}</TD>
-                  <TD className="text-[var(--color-text-secondary)]">{e.semester}</TD>
+                  <TD className="text-[var(--color-text-secondary)]">{e.semester ? `Semester ${String(e.semester).replace(/^Semester\s*/i, '').trim()}` : ''}</TD>
                   <TD className="text-[var(--color-text-secondary)]">{formatDate(e.date)}, {e.time}</TD>
                   <TD className="text-[var(--color-text-secondary)]">{e.duration}</TD>
                   <TD className="text-[var(--color-text-secondary)] font-mono text-xs">{e.room}</TD>

@@ -42,7 +42,13 @@ export default function StudentProfile() {
 
   const handleEditSubmit = async (studentData) => {
     try {
-      const updated = await editStudent(id, studentData);
+      console.log("Submitting update:", {
+          selectedStudent: student,
+          id: student.id,
+          user_id: student.user_id,
+          student_id: student.student_id
+      });
+      const updated = await editStudent(student.user_id, studentData);
       setStudent(updated);
       setIsEditModalOpen(false);
     } catch (err) {
@@ -178,7 +184,7 @@ export default function StudentProfile() {
                 </div>
                 <div>
                   <p className="text-xs text-[var(--color-text-muted)]">Semester</p>
-                  <p className="text-sm font-medium text-white">{student.semester}</p>
+                  <p className="text-sm font-medium text-white">{student.semester ? `Semester ${String(student.semester).replace(/^Semester\s*/i, '').trim()}` : 'N/A'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">

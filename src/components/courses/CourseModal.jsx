@@ -3,8 +3,7 @@ import Button from '../common/Button';
 import Input from '../common/Input';
 import Modal from '../common/Modal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../common/Select';
-
-const departments = ['Computer Science', 'Business', 'Engineering', 'Arts', 'Science'];
+import { departments } from '../../data/departments';
 const semesters = [
   { label: "Semester 1", value: 1 },
   { label: "Semester 2", value: 2 },

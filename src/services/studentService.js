@@ -34,15 +34,31 @@ export const studentService = {
     return { data, count };
   },
 
-  async getStudentById(id) {
+  async getStudentById(userId) {
     const { data, error } = await supabase
-      .from('students')
-      .select('*')
-      .eq('id', id)
+      .from("students")
+      .select("*")
+      .eq("user_id", userId)
       .single();
-      
+
     if (error) throw error;
     return data;
+  },
+
+  async checkStudentIdExists(studentId, excludeUserId = null) {
+    if (!studentId) return false;
+    let query = supabase
+      .from("students")
+      .select("id")
+      .eq("student_id", studentId);
+      
+    if (excludeUserId) {
+      query = query.neq("user_id", excludeUserId);
+    }
+    
+    const { data, error } = await query;
+    if (error) throw error;
+    return data.length > 0;
   },
 
   async createStudent(studentData) {
@@ -69,7 +85,8 @@ export const studentService = {
     const { password, confirmPassword, ...restData } = studentData;
     
     const studentProfileData = {
-      id: authData.user.id,
+      id: crypto.randomUUID(),
+      user_id: authData.user.id,
       student_id: restData.student_id,
       full_name: restData.full_name,
       email: restData.email,
@@ -100,7 +117,7 @@ export const studentService = {
     return data;
   },
 
-  async updateStudent(id, studentData) {
+  async updateStudentByUserId(userId, studentData) {
     const { password, confirmPassword, ...restData } = studentData;
 
     const updateData = {
@@ -120,16 +137,35 @@ export const studentService = {
     // Remove any undefined fields so we don't overwrite with nulls accidentally
     Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
 
-    const { data, error } = await supabase
+    console.log("Updating student:", {
+      userId,
+      studentData
+    });
+
+    const { data: existingRow, error: existingError } = await supabase
+      .from('students')
+      .select('*')
+      .eq('user_id', userId);
+
+    console.log('Existing row:', existingRow);
+    console.log('Existing row error:', existingError);
+
+    const { error } = await supabase
       .from('students')
       .update(updateData)
-      .eq('id', id)
-      .select()
+      .eq('user_id', userId);
 
-      .single();
-      
     if (error) throw error;
-    return data;
+
+    const { data: updatedRow, error: fetchError } = await supabase
+      .from('students')
+      .select('*')
+      .eq('user_id', userId);
+
+    console.log('Updated row:', updatedRow);
+    console.log('Fetch error:', fetchError);
+
+    return updatedRow?.[0];
   },
 
   async deleteStudent(id) {

@@ -64,9 +64,9 @@ export default function StudentTable({
                   </div>
                 </div>
               </TD>
-              <TD className="text-[var(--color-text-secondary)] font-mono text-xs">{s.student_id}</TD>
+              <TD className="text-[var(--color-text-secondary)] font-mono text-xs">{s.student_id || 'Not Assigned'}</TD>
               <TD className="text-[var(--color-text-secondary)]">{s.department}</TD>
-              <TD className="text-[var(--color-text-secondary)]">{s.semester}</TD>
+              <TD className="text-[var(--color-text-secondary)]">{s.semester ? `Semester ${String(s.semester).replace(/^Semester\s*/i, '').trim()}` : ''}</TD>
               <TD><Badge tone={statusTone[s.status] || 'neutral'} dot>{s.status}</Badge></TD>
               <TD>
                 <Dropdown
@@ -77,7 +77,7 @@ export default function StudentTable({
                     </button>
                   }
                 >
-                  <DropdownItem icon={Eye} onClick={() => navigate(`/admin/students/${s.id}`)}>
+                  <DropdownItem icon={Eye} onClick={() => navigate(`/admin/students/${s.user_id}`)}>
                     View profile
                   </DropdownItem>
                   <DropdownItem icon={Pencil} onClick={() => onEdit(s)}>

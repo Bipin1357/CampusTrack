@@ -159,5 +159,216 @@ export const attendanceService = {
     }
 
     return data;
+  },
+
+  // --- ADMIN METHODS ---
+
+  async getAdminAttendanceStats(date = this.getTodayDateString()) {
+    const { data, error } = await supabase
+      .from('attendance')
+      .select('status')
+      .eq('date', date);
+
+    if (error) throw error;
+
+    let present = 0;
+    let absent = 0;
+    let late = 0;
+
+    data.forEach(r => {
+      if (r.status === 'Present') present++;
+      else if (r.status === 'Absent') absent++;
+      else if (r.status === 'Late') late++;
+    });
+
+    const total = data.length;
+    const rate = total === 0 ? 0 : Math.round(((present + late) / total) * 100);
+
+    return { present, absent, late, rate, total };
+  },
+
+  async getMonthlyAttendanceTrend(year = new Date().getFullYear()) {
+    const startDate = `${year}-01-01`;
+    const endDate = `${year}-12-31`;
+
+    const { data, error } = await supabase
+      .from('attendance')
+      .select('date, status')
+      .gte('date', startDate)
+      .lte('date', endDate);
+
+    if (error) throw error;
+
+    const monthlyStats = Array(12).fill(null).map(() => ({ present: 0, total: 0 }));
+
+    data.forEach(r => {
+      const monthIndex = new Date(r.date).getMonth();
+      monthlyStats[monthIndex].total++;
+      if (r.status === 'Present' || r.status === 'Late') {
+        monthlyStats[monthIndex].present++;
+      }
+    });
+
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return monthlyStats.map((stat, i) => ({
+      month: monthNames[i],
+      rate: stat.total === 0 ? 0 : Math.round((stat.present / stat.total) * 100)
+    }));
+  },
+
+  async getAttendanceRecords(filters = {}) {
+    let query = supabase
+      .from('attendance')
+      .select(`
+        id,
+        date,
+        status,
+        marked_at,
+        student:students!inner (id, full_name, student_id, department, semester, section),
+        course:courses (id, course_name)
+      `, { count: 'exact' });
+
+    if (filters.date) query = query.eq('date', filters.date);
+    if (filters.status && filters.status !== 'All Status') query = query.eq('status', filters.status);
+    
+    query = query.order('date', { ascending: false }).limit(1000);
+
+    const { data, error, count } = await query;
+    if (error) throw error;
+
+    return { data, count };
+  },
+
+  async getStudentsForAttendance(courseId, date) {
+    // 1. Get all students enrolled in the course
+    const { data: enrollments, error: enrollError } = await supabase
+      .from('enrollments')
+      .select(`
+        student_id,
+        students (id, full_name, student_id)
+      `)
+      .eq('course_id', courseId)
+      .eq('status', 'active');
+
+    if (enrollError) throw enrollError;
+
+    // 2. Get existing attendance for this course and date
+    const { data: existingAttendance, error: attError } = await supabase
+      .from('attendance')
+      .select('*')
+      .eq('course_id', courseId)
+      .eq('date', date);
+
+    if (attError) throw attError;
+
+    const attendanceMap = {};
+    existingAttendance.forEach(a => {
+      attendanceMap[a.student_id] = a.status;
+    });
+
+    return enrollments.map(e => ({
+      student_id: e.students.id,
+      student_roll: e.students.student_id,
+      student_name: e.students.full_name,
+      status: attendanceMap[e.students.id] || null
+    })).sort((a, b) => a.student_name.localeCompare(b.student_name));
+  },
+
+  async markBulkAttendance(records) {
+    const { data, error } = await supabase
+      .from('attendance')
+      .upsert(records, { onConflict: 'student_id,course_id,date' }); // Fixed onConflict string format
+
+    if (error) throw error;
+    return data;
+  },
+
+  // --- STUDENT METHODS ---
+  
+  async getStudentAttendanceStats(studentId, currentSemesterOnly = true) {
+    // Optionally filter by current semester if needed, using courses/enrollments logic. 
+    // For now, fetching all records for this student.
+    const { data, error } = await supabase
+      .from('attendance')
+      .select('status')
+      .eq('student_id', studentId);
+      
+    if (error) throw error;
+
+    let present = 0;
+    let absent = 0;
+    let late = 0;
+
+    data.forEach(r => {
+      if (r.status === 'Present') present++;
+      else if (r.status === 'Absent') absent++;
+      else if (r.status === 'Late') late++;
+    });
+
+    const total = data.length;
+    const rate = total === 0 ? 100 : Math.round(((present + late) / total) * 100);
+
+    return { present, absent, late, rate, total };
+  },
+
+  async getStudentSubjectBreakdown(studentId) {
+    const { data, error } = await supabase
+      .from('attendance')
+      .select(`
+        status,
+        course:courses(id, course_name)
+      `)
+      .eq('student_id', studentId);
+      
+    if (error) throw error;
+
+    const breakdown = {};
+    data.forEach(r => {
+      if (!r.course) return; 
+      const courseName = r.course.course_name;
+      if (!breakdown[courseName]) breakdown[courseName] = { present: 0, total: 0 };
+      
+      breakdown[courseName].total++;
+      if (r.status === 'Present' || r.status === 'Late') {
+        breakdown[courseName].present++;
+      }
+    });
+
+    return Object.entries(breakdown).map(([subject, counts]) => ({
+      subject,
+      rate: counts.total === 0 ? 0 : Math.round((counts.present / counts.total) * 100),
+      attended: counts.present,
+      total: counts.total
+    }));
+  },
+
+  async getStudentMonthlyChart(studentId, year = new Date().getFullYear()) {
+    const startDate = `${year}-01-01`;
+    const endDate = `${year}-12-31`;
+
+    const { data, error } = await supabase
+      .from('attendance')
+      .select('date, status')
+      .eq('student_id', studentId)
+      .gte('date', startDate)
+      .lte('date', endDate);
+
+    if (error) throw error;
+
+    const monthlyStats = Array(12).fill(null).map(() => ({ present: 0, total: 0 }));
+
+    data.forEach(r => {
+      const monthIndex = new Date(r.date).getMonth();
+      monthlyStats[monthIndex].total++;
+      if (r.status === 'Present' || r.status === 'Late') {
+        monthlyStats[monthIndex].present++;
+      }
+    });
+
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return monthlyStats.map((stat, i) => ({
+      month: monthNames[i],
+      rate: stat.total === 0 ? 0 : Math.round((stat.present / stat.total) * 100)
+    }));
   }
 };

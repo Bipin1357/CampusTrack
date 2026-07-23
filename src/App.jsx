@@ -14,6 +14,8 @@ import StudentAttendance from './pages/student/Attendance';
 import StudentTimetable from './pages/student/Timetable';
 import StudentResults from './pages/student/Results';
 import StudentNotices from './pages/student/Notices';
+import CompleteProfile from './pages/student/CompleteProfile';
+import StudentSettings from './pages/student/Settings';
 
 import Dashboard from './pages/Dashboard';
 import StudentsPage from './pages/admin/Students/StudentsPage';
@@ -85,6 +87,14 @@ function App() {
           
           {/* Protected Routes */}
           <Route 
+            path="/student/complete-profile" 
+            element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <CompleteProfile />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
             path="/student" 
             element={
               <ProtectedRoute allowedRoles={['student']}>
@@ -99,6 +109,7 @@ function App() {
             <Route path="timetable" element={<StudentTimetable />} />
             <Route path="results" element={<StudentResults />} />
             <Route path="notices" element={<StudentNotices />} />
+            <Route path="settings" element={<StudentSettings />} />
           </Route>
           <Route 
             path="/admin" 

@@ -1,8 +1,9 @@
 import SearchBar from '../common/SearchBar';
 import { SlidersHorizontal } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../common/Select';
+import { departments as departmentList } from '../../data/departments';
 
-const departments = ['All Departments', 'Computer Science', 'Business', 'Engineering', 'Arts', 'Science'];
+const departments = ['All Departments', ...departmentList];
 const semesters = [
   { label: "All Semesters", value: "all" },
   { label: "Semester 1", value: 1 },

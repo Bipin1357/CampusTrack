@@ -29,17 +29,29 @@ export const AuthProvider = ({ children }) => {
           // Fetch user role from Supabase
           console.log("Authenticated User:", user);
 
-          const { data: userData, error: userError } = await supabase
-            .from("users")
-            .select("*")
-            .eq("id", user.id)
-            .maybeSingle();
+          console.log("Fetching user profile...");
+          console.log("Auth User ID:", user.id);
 
-          console.log("========== PROFILE FETCH ==========");
-          console.log("User ID:", user.id);
-          console.log("Returned Data:", userData);
-          console.log("Supabase Error:", userError);
-          console.log("==================================");
+          let userData = null;
+          let userError = null;
+
+          for (let i = 0; i < 5; i++) {
+            const { data, error } = await supabase
+              .from("users")
+              .select("*")
+              .eq("id", user.id)
+              .maybeSingle();
+
+            userData = data;
+            userError = error;
+
+            if (userError || userData) break;
+
+            await new Promise((resolve) => setTimeout(resolve, 500));
+          }
+
+          console.log("Returned User Data:", userData);
+          console.log("User Query Error:", userError);
 
           if (userError) {
             throw userError;
@@ -47,6 +59,35 @@ export const AuthProvider = ({ children }) => {
           
           if (!userData) {
             throw new Error("User profile not found in users table.");
+          }
+
+          let studentProfile = null;
+
+          if (userData.role === "student") {
+            console.log("Fetching student profile...");
+
+            let studentError = null;
+
+            for (let i = 0; i < 5; i++) {
+              const { data, error } = await supabase
+                .from("students")
+                .select("*")
+                .eq("user_id", user.id)
+                .maybeSingle();
+
+              studentProfile = data;
+              studentError = error;
+
+              if (studentError || studentProfile) break;
+
+              await new Promise((resolve) => setTimeout(resolve, 500));
+            }
+
+            console.log("Returned Student Data:", studentProfile);
+            console.log("Student Query Error:", studentError);
+
+            if (studentError) throw studentError;
+            if (!studentProfile) throw new Error("Student profile not found.");
           }
 
           console.log("========== USER DEBUG ==========");
@@ -77,15 +118,34 @@ export const AuthProvider = ({ children }) => {
             email: user.email,
             name: userData.name,
             role: userData.role,
+            studentProfile,
           });
 
-          // Redirect to appropriate dashboard if they are on login or root
-          if (location.pathname === '/login' || location.pathname === '/') {
-            const roleRoutes = {
-              admin: "/admin/dashboard",
-              student: "/student/dashboard",
-            };
-            const destination = location.state?.from?.pathname || roleRoutes[userData.role] || "/";
+          let destination = null;
+
+          if (userData.role === "admin") {
+            if (location.pathname === '/login' || location.pathname === '/') {
+              destination = location.state?.from?.pathname || "/admin/dashboard";
+            }
+          } else {
+            const profileComplete =
+              studentProfile &&
+              studentProfile.department &&
+              studentProfile.semester &&
+              studentProfile.section;
+
+            if (!profileComplete) {
+              if (location.pathname !== "/student/complete-profile") {
+                destination = "/student/complete-profile";
+              }
+            } else {
+              if (location.pathname === '/login' || location.pathname === '/') {
+                destination = location.state?.from?.pathname || "/student/dashboard";
+              }
+            }
+          }
+
+          if (destination) {
             navigate(destination, { replace: true });
           }
         } else {

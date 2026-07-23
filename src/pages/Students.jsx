@@ -5,8 +5,9 @@ import Button from '@/components/common/Button'
 import SearchBar from '@/components/common/SearchBar'
 import { StudentTable } from '@/components/admin'
 import { students } from '@/data/studentsData'
+import { departments as departmentList } from '@/data/departments'
 
-const departments = ['All Departments', ...new Set(students.map((s) => s.department))]
+const departments = ['All Departments', ...departmentList]
 const statuses = ['All Status', 'Active', 'Probation', 'Graduated']
 
 export default function Students() {

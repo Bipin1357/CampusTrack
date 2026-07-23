@@ -3,8 +3,7 @@ import Button from '../common/Button';
 import Input from '../common/Input';
 import Modal from '../common/Modal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../common/Select';
-
-const departments = ['Computer Science', 'Business', 'Engineering', 'Arts', 'Science'];
+import { departments } from '../../data/departments';
 const semesters = [
   { label: 'Semester 1', value: '1' },
   { label: 'Semester 2', value: '2' },
@@ -41,6 +40,7 @@ export default function StudentModal({ isOpen, onClose, onSubmit, student, allSt
     if (student) {
       setFormData({
         ...student,
+        student_id: student.student_id || '',
         semester: String(student.semester ?? semesters[0].value),
         password: '',
         confirmPassword: '',
@@ -78,15 +78,18 @@ export default function StudentModal({ isOpen, onClose, onSubmit, student, allSt
 
     // Basic Validation
     if (!formData.full_name) newErrors.full_name = 'Full name is required';
-    if (!formData.student_id) newErrors.student_id = 'Student ID is required';
     if (!formData.email) newErrors.email = 'Email is required';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Invalid email format';
 
-    // Duplicate Validation (only when creating)
-    if (!student) {
-      if (allStudents.some(s => s.student_id === formData.student_id)) {
+    // Duplicate Validation
+    if (formData.student_id) {
+      const isDuplicate = allStudents.some(s => s.student_id === formData.student_id && s.id !== student?.id);
+      if (isDuplicate) {
         newErrors.student_id = 'Student ID already exists';
       }
+    }
+
+    if (!student) {
       if (allStudents.some(s => s.email.toLowerCase() === formData.email.toLowerCase())) {
         newErrors.email = 'Email already exists';
       }
@@ -120,7 +123,7 @@ export default function StudentModal({ isOpen, onClose, onSubmit, student, allSt
               {errors.full_name && <p className="text-red-500 text-xs mt-1">{errors.full_name}</p>}
             </div>
             <div>
-              <Input label="Student ID" name="student_id" value={formData.student_id} onChange={handleChange} required disabled={!!student} />
+              <Input label="Student ID" name="student_id" value={formData.student_id} onChange={handleChange} />
               {errors.student_id && <p className="text-red-500 text-xs mt-1">{errors.student_id}</p>}
             </div>
             <div>

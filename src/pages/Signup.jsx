@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { signup } from '../services/authService';
-import { supabase } from '../supabase/supabaseClient';
+import { signupStudent } from '../services/authService';
 
 function Signup() {
   const [fullName, setFullName] = useState('');
@@ -65,46 +64,11 @@ function Signup() {
 
     try {
       setLoading(true);
-      const data = await signup(email, password);
-      console.log("Signup response:", data);
-
-const {
- data: { session }
-} = await supabase.auth.getSession();
-
-console.log("Current session:", session);
-      const user = data.user;
-      
-      if (user) {
-        const { data: insertedUser, error } = await supabase
-          .from("users")
-          .insert([
-            {
-              id: user.id,
-              name: fullName.trim(),
-              email: email.toLowerCase(),
-              role: "student",
-              created_at: new Date().toISOString(),
-            },
-          ])
-          .select();
-
-        console.log("========== USER INSERT ==========");
-        console.log("Authenticated User:", user);
-        console.log("Data Being Inserted:", {
-          id: user.id,
-          name: fullName.trim(),
-          email: email.toLowerCase(),
-          role: "student",
-        });
-        console.log("Insert Result:", insertedUser);
-        console.log("Insert Error:", error);
-        console.log("=================================");
-
-        if (error) {
-          throw error;
-        }
-      }
+      const data = await signupStudent({
+        fullName,
+        email,
+        password,
+      });
 
       toast.success('Account created successfully!');
 
@@ -113,7 +77,7 @@ console.log("Current session:", session);
         setSuccess(true);
       } else {
         // Email confirmation is OFF, user is logged in
-        navigate('/student/dashboard', { replace: true });
+        navigate('/student/complete-profile', { replace: true });
       }
 
     } catch (err) {

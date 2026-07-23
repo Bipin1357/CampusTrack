@@ -1,12 +1,46 @@
-import { useState } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import StudentSidebar from '../student/StudentSidebar'
 import StudentTopbar from '../student/StudentTopbar'
+import { useAuth } from '../../context/AuthContext'
+import { studentService } from '../../services/studentService'
+import { Loader2 } from 'lucide-react'
 
 export default function StudentLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
+  const { currentUser } = useAuth()
+  const [loadingProfile, setLoadingProfile] = useState(true)
+
+  useEffect(() => {
+    const checkProfile = async () => {
+      if (!currentUser?.uid) return;
+      try {
+        const profile = await studentService.getStudentById(currentUser.uid);
+        if (!profile || !profile.department || !profile.semester || !profile.section) {
+          navigate('/student/complete-profile', { replace: true });
+        } else {
+          setLoadingProfile(false);
+        }
+      } catch (error) {
+        console.error("Error checking student profile:", error);
+        // Fallback: allow to dashboard or handle error
+        setLoadingProfile(false);
+      }
+    };
+    
+    checkProfile();
+  }, [currentUser, navigate]);
+
+  if (loadingProfile) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-bg-primary">
+        <Loader2 className="h-10 w-10 animate-spin text-accent-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-[var(--color-bg-base)]">

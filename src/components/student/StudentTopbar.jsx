@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useLocation, Link } from 'react-router-dom'
+import { useLocation, Link, useNavigate } from 'react-router-dom'
 import { Menu, Bell, Sun, Moon, ChevronRight, LogOut, User, Settings as SettingsIcon } from 'lucide-react'
 import SearchBar from '../common/SearchBar'
 import Avatar from '../common/Avatar'
@@ -32,6 +32,7 @@ export default function StudentTopbar({ onOpenMobile }) {
   const [search, setSearch] = useState('')
   const [dark, setDark] = useState(true)
   const crumbs = useBreadcrumbs()
+  const navigate = useNavigate()
   const { currentUser, logout } = useAuth()
 
   const handleLogout = async () => {
@@ -104,8 +105,8 @@ export default function StudentTopbar({ onOpenMobile }) {
             <p className="text-sm font-medium">{studentName}</p>
             <p className="text-xs text-[var(--color-text-muted)]">Student</p>
           </div>
-          <DropdownItem icon={User}>My Profile</DropdownItem>
-          <DropdownItem icon={SettingsIcon}>Settings</DropdownItem>
+          <DropdownItem icon={User} onClick={() => navigate('/student/profile')}>My Profile</DropdownItem>
+          <DropdownItem icon={SettingsIcon} onClick={() => navigate('/student/settings')}>Settings</DropdownItem>
           <DropdownDivider />
           <DropdownItem icon={LogOut} onClick={handleLogout} className="text-rose-300 hover:text-rose-200 cursor-pointer">Sign out</DropdownItem>
         </Dropdown>

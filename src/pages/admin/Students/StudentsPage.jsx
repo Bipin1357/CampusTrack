@@ -74,7 +74,13 @@ export default function StudentsPage() {
   const handleSubmit = async (studentData) => {
     try {
       if (selectedStudent) {
-        await editStudent(selectedStudent.id, studentData);
+        console.log("Submitting update:", {
+            selectedStudent,
+            id: selectedStudent.id,
+            user_id: selectedStudent.user_id,
+            student_id: selectedStudent.student_id
+        });
+        await editStudent(selectedStudent.user_id, studentData);
       } else {
         await addStudent(studentData);
       }

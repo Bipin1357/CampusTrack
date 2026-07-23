@@ -45,11 +45,12 @@ export function useStudents(options = {}) {
     }
   };
 
-  const editStudent = async (id, studentData) => {
+  const editStudent = async (userId, studentData) => {
     try {
-      const updatedStudent = await studentService.updateStudent(id, studentData);
-      setStudents(prev => prev.map(s => s.id === id ? updatedStudent : s));
+      const updatedStudent = await studentService.updateStudentByUserId(userId, studentData);
+      setStudents(prev => prev.map(s => s.user_id === userId ? updatedStudent : s));
       toast.success('Student updated successfully');
+      await fetchStudents();
       return updatedStudent;
     } catch (err) {
       console.error('Error updating student:', err);

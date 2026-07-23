@@ -170,6 +170,10 @@ export const timetableService = {
 
     const { semester, section } = studentData;
 
+    if (!semester || !section) {
+      return [];
+    }
+
     // Now fetch timetable for today, matching semester & section, and where student is enrolled in the course
     const { data, error } = await supabase
       .from('timetable')
@@ -214,6 +218,10 @@ export const timetableService = {
     }
 
     const { semester, section } = studentData;
+
+    if (!semester || !section) {
+      return [];
+    }
 
     // Now fetch timetable for the whole week, matching semester & section, and where student is enrolled
     const { data, error } = await supabase

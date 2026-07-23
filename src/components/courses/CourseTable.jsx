@@ -65,7 +65,7 @@ export default function CourseTable({
               <TD className="text-[var(--color-text-secondary)]">{course.credits}</TD>
               <TD className="text-[var(--color-text-secondary)]">{course.course_type || '-'}</TD>
               <TD className="text-[var(--color-text-secondary)]">{course.department}</TD>
-              <TD className="text-[var(--color-text-secondary)]">Semester {course.semester}</TD>
+              <TD className="text-[var(--color-text-secondary)]">{course.semester ? `Semester ${String(course.semester).replace(/^Semester\s*/i, '').trim()}` : ''}</TD>
               <TD>
                 <Badge variant={course.status === 'Active' ? 'success' : 'default'} dot>
                   {course.status}
