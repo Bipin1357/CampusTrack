@@ -31,15 +31,19 @@ export default function StudentAttendance() {
   }, []);
 
   const fetchData = async () => {
-    if (!currentUser?.uid) return;
+    const studentId = currentUser?.studentProfile?.id;
+    if (!studentId) {
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       const [todayClasses, todayAttendance, statsData, breakdown, trend] = await Promise.all([
-        attendanceService.getTodayClasses(currentUser.uid),
-        attendanceService.getTodayAttendance(currentUser.uid),
-        attendanceService.getStudentAttendanceStats(currentUser.uid),
-        attendanceService.getStudentSubjectBreakdown(currentUser.uid),
-        attendanceService.getStudentMonthlyChart(currentUser.uid)
+        attendanceService.getTodayClasses(studentId),
+        attendanceService.getTodayAttendance(studentId),
+        attendanceService.getStudentAttendanceStats(studentId),
+        attendanceService.getStudentSubjectBreakdown(studentId),
+        attendanceService.getStudentMonthlyChart(studentId)
       ]);
       setClasses(todayClasses);
       setAttendanceRecords(todayAttendance);
@@ -59,7 +63,9 @@ export default function StudentAttendance() {
 
   const handleMarkAttendance = async (courseId, endTimeStr) => {
     try {
-      await attendanceService.markAttendance(currentUser.uid, courseId, endTimeStr);
+      const studentId = currentUser?.studentProfile?.id;
+      if (!studentId) throw new Error('Student profile is unavailable.');
+      await attendanceService.markAttendance(studentId, courseId, endTimeStr);
       toast.success('Attendance marked successfully!');
       fetchData(); // Refresh to get the updated record
     } catch (error) {

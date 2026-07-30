@@ -21,7 +21,7 @@ export default function TakeAttendanceModal({ isOpen, onClose, onSuccess }) {
   const [loadingStudents, setLoadingStudents] = useState(false);
   const [saving, setSaving] = useState(false);
   
-  const [attendanceState, setAttendanceState] = useState({}); // { student_id: 'Present' | 'Absent' | 'Late' }
+  const [attendanceState, setAttendanceState] = useState({}); // { student_id: 'present' | 'absent' | 'late' }
 
   // Search in student list
   const [search, setSearch] = useState('');
@@ -80,7 +80,7 @@ export default function TakeAttendanceModal({ isOpen, onClose, onSuccess }) {
   const handleMarkAllPresent = () => {
     const newState = { ...attendanceState };
     students.forEach(s => {
-      newState[s.student_id] = 'Present';
+      newState[s.student_id] = 'present';
     });
     setAttendanceState(newState);
   };
@@ -95,7 +95,7 @@ export default function TakeAttendanceModal({ isOpen, onClose, onSuccess }) {
     const recordsToSave = Object.entries(attendanceState).map(([studentId, status]) => ({
       student_id: studentId,
       course_id: selectedCourse,
-      date: selectedDate,
+      attendance_date: selectedDate,
       status: status,
       marked_at: new Date().toISOString()
     }));
@@ -112,8 +112,8 @@ export default function TakeAttendanceModal({ isOpen, onClose, onSuccess }) {
       onSuccess?.();
       onClose();
     } catch (error) {
-      toast.error('Failed to save attendance');
-      console.error(error);
+      console.error('Failed to save attendance:', error);
+      toast.error(error.message || 'Failed to save attendance');
     } finally {
       setSaving(false);
     }
@@ -195,9 +195,9 @@ export default function TakeAttendanceModal({ isOpen, onClose, onSuccess }) {
                   </div>
                   <div className="flex items-center gap-2">
                     <button 
-                      onClick={() => handleStatusChange(student.student_id, 'Present')}
+                      onClick={() => handleStatusChange(student.student_id, 'present')}
                       className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all border ${
-                        attendanceState[student.student_id] === 'Present' 
+                        attendanceState[student.student_id] === 'present'
                           ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' 
                           : 'bg-transparent text-[var(--color-text-muted)] border-transparent hover:bg-white/5'
                       }`}
@@ -205,9 +205,9 @@ export default function TakeAttendanceModal({ isOpen, onClose, onSuccess }) {
                       Present
                     </button>
                     <button 
-                      onClick={() => handleStatusChange(student.student_id, 'Absent')}
+                      onClick={() => handleStatusChange(student.student_id, 'absent')}
                       className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all border ${
-                        attendanceState[student.student_id] === 'Absent' 
+                        attendanceState[student.student_id] === 'absent'
                           ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' 
                           : 'bg-transparent text-[var(--color-text-muted)] border-transparent hover:bg-white/5'
                       }`}
@@ -215,9 +215,9 @@ export default function TakeAttendanceModal({ isOpen, onClose, onSuccess }) {
                       Absent
                     </button>
                     <button 
-                      onClick={() => handleStatusChange(student.student_id, 'Late')}
+                      onClick={() => handleStatusChange(student.student_id, 'late')}
                       className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all border ${
-                        attendanceState[student.student_id] === 'Late' 
+                        attendanceState[student.student_id] === 'late'
                           ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' 
                           : 'bg-transparent text-[var(--color-text-muted)] border-transparent hover:bg-white/5'
                       }`}

@@ -1,5 +1,8 @@
 import { supabase } from '../supabase/supabaseClient';
 
+const ATTENDED_STATUSES = new Set(['present', 'late']);
+const normalizeAttendanceStatus = (status) => String(status || '').toLowerCase();
+
 export const attendanceService = {
   /**
    * Helper to get current weekday as string (e.g., "Monday")
@@ -76,7 +79,7 @@ export const attendanceService = {
       .from('attendance')
       .select('*')
       .eq('student_id', studentId)
-      .eq('date', todayDate);
+      .eq('attendance_date', todayDate);
 
     if (error) {
       console.error("Error fetching today's attendance:", error);
@@ -143,8 +146,8 @@ export const attendanceService = {
         {
           student_id: studentId,
           course_id: courseId,
-          date: todayDate,
-          status: 'Present',
+          attendance_date: todayDate,
+          status: 'present',
           marked_at: new Date().toISOString()
         }
       ])
@@ -163,11 +166,11 @@ export const attendanceService = {
 
   // --- ADMIN METHODS ---
 
-  async getAdminAttendanceStats(date = this.getTodayDateString()) {
+  async getAdminAttendanceStats(attendanceDate = this.getTodayDateString()) {
     const { data, error } = await supabase
       .from('attendance')
       .select('status')
-      .eq('date', date);
+      .eq('attendance_date', attendanceDate);
 
     if (error) throw error;
 
@@ -176,9 +179,10 @@ export const attendanceService = {
     let late = 0;
 
     data.forEach(r => {
-      if (r.status === 'Present') present++;
-      else if (r.status === 'Absent') absent++;
-      else if (r.status === 'Late') late++;
+      const status = normalizeAttendanceStatus(r.status);
+      if (status === 'present') present++;
+      else if (status === 'absent') absent++;
+      else if (status === 'late') late++;
     });
 
     const total = data.length;
@@ -193,18 +197,18 @@ export const attendanceService = {
 
     const { data, error } = await supabase
       .from('attendance')
-      .select('date, status')
-      .gte('date', startDate)
-      .lte('date', endDate);
+      .select('attendance_date, status')
+      .gte('attendance_date', startDate)
+      .lte('attendance_date', endDate);
 
     if (error) throw error;
 
     const monthlyStats = Array(12).fill(null).map(() => ({ present: 0, total: 0 }));
 
     data.forEach(r => {
-      const monthIndex = new Date(r.date).getMonth();
+      const monthIndex = new Date(r.attendance_date).getMonth();
       monthlyStats[monthIndex].total++;
-      if (r.status === 'Present' || r.status === 'Late') {
+      if (ATTENDED_STATUSES.has(normalizeAttendanceStatus(r.status))) {
         monthlyStats[monthIndex].present++;
       }
     });
@@ -221,17 +225,17 @@ export const attendanceService = {
       .from('attendance')
       .select(`
         id,
-        date,
+        attendance_date,
         status,
         marked_at,
         student:students!inner (id, full_name, student_id, department, semester, section),
         course:courses (id, course_name)
       `, { count: 'exact' });
 
-    if (filters.date) query = query.eq('date', filters.date);
-    if (filters.status && filters.status !== 'All Status') query = query.eq('status', filters.status);
+    if (filters.date) query = query.eq('attendance_date', filters.date);
+    if (filters.status && filters.status !== 'All Status') query = query.eq('status', filters.status.toLowerCase());
     
-    query = query.order('date', { ascending: false }).limit(1000);
+    query = query.order('attendance_date', { ascending: false }).limit(1000);
 
     const { data, error, count } = await query;
     if (error) throw error;
@@ -239,7 +243,7 @@ export const attendanceService = {
     return { data, count };
   },
 
-  async getStudentsForAttendance(courseId, date) {
+  async getStudentsForAttendance(courseId, attendanceDate) {
     // 1. Get all students enrolled in the course
     const { data: enrollments, error: enrollError } = await supabase
       .from('enrollments')
@@ -257,13 +261,13 @@ export const attendanceService = {
       .from('attendance')
       .select('*')
       .eq('course_id', courseId)
-      .eq('date', date);
+      .eq('attendance_date', attendanceDate);
 
     if (attError) throw attError;
 
     const attendanceMap = {};
     existingAttendance.forEach(a => {
-      attendanceMap[a.student_id] = a.status;
+      attendanceMap[a.student_id] = normalizeAttendanceStatus(a.status);
     });
 
     return enrollments.map(e => ({
@@ -277,7 +281,7 @@ export const attendanceService = {
   async markBulkAttendance(records) {
     const { data, error } = await supabase
       .from('attendance')
-      .upsert(records, { onConflict: 'student_id,course_id,date' }); // Fixed onConflict string format
+      .upsert(records, { onConflict: 'student_id,course_id,attendance_date' });
 
     if (error) throw error;
     return data;
@@ -300,9 +304,10 @@ export const attendanceService = {
     let late = 0;
 
     data.forEach(r => {
-      if (r.status === 'Present') present++;
-      else if (r.status === 'Absent') absent++;
-      else if (r.status === 'Late') late++;
+      const status = normalizeAttendanceStatus(r.status);
+      if (status === 'present') present++;
+      else if (status === 'absent') absent++;
+      else if (status === 'late') late++;
     });
 
     const total = data.length;
@@ -329,7 +334,7 @@ export const attendanceService = {
       if (!breakdown[courseName]) breakdown[courseName] = { present: 0, total: 0 };
       
       breakdown[courseName].total++;
-      if (r.status === 'Present' || r.status === 'Late') {
+      if (ATTENDED_STATUSES.has(normalizeAttendanceStatus(r.status))) {
         breakdown[courseName].present++;
       }
     });
@@ -348,19 +353,19 @@ export const attendanceService = {
 
     const { data, error } = await supabase
       .from('attendance')
-      .select('date, status')
+      .select('attendance_date, status')
       .eq('student_id', studentId)
-      .gte('date', startDate)
-      .lte('date', endDate);
+      .gte('attendance_date', startDate)
+      .lte('attendance_date', endDate);
 
     if (error) throw error;
 
     const monthlyStats = Array(12).fill(null).map(() => ({ present: 0, total: 0 }));
 
     data.forEach(r => {
-      const monthIndex = new Date(r.date).getMonth();
+      const monthIndex = new Date(r.attendance_date).getMonth();
       monthlyStats[monthIndex].total++;
-      if (r.status === 'Present' || r.status === 'Late') {
+      if (ATTENDED_STATUSES.has(normalizeAttendanceStatus(r.status))) {
         monthlyStats[monthIndex].present++;
       }
     });

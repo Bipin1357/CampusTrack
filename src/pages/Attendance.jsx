@@ -44,8 +44,8 @@ export default function Attendance() {
         rollNo: r.student?.student_id || 'Unknown',
         department: r.student?.department || 'Unknown',
         course: r.course?.course_name || 'N/A',
-        date: r.date,
-        status: r.status
+        date: r.attendance_date,
+        status: r.status ? `${r.status.charAt(0).toUpperCase()}${r.status.slice(1)}` : 'Unknown'
       }))
       setRecords(mappedRecords)
       
