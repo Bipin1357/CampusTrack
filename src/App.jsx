@@ -25,8 +25,6 @@ import CourseDetails from './pages/admin/Courses/CourseDetails';
 import Attendance from './pages/Attendance';
 import Timetable from './pages/Timetable';
 import Departments from './pages/Departments';
-import Examinations from './pages/Examinations';
-import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import NotFound from './pages/NotFound';
 
@@ -128,8 +126,6 @@ function App() {
             <Route path="attendance" element={<Attendance />} />
             <Route path="timetable" element={<Timetable />} />
             <Route path="departments" element={<Departments />} />
-            <Route path="examinations" element={<Examinations />} />
-            <Route path="reports" element={<Reports />} />
             <Route path="settings" element={<Settings />} />
           </Route>
           

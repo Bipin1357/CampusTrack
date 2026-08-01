@@ -3,7 +3,8 @@ import Button from '../common/Button';
 import Input from '../common/Input';
 import Modal from '../common/Modal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../common/Select';
-import { departments } from '../../data/departments';
+import { useDepartments } from '@/hooks/useDepartments';
+
 const semesters = [
   { label: 'Semester 1', value: '1' },
   { label: 'Semester 2', value: '2' },
@@ -19,6 +20,8 @@ const genders = ['Male', 'Female', 'Other'];
 const statuses = ['Active', 'Inactive'];
 
 export default function StudentModal({ isOpen, onClose, onSubmit, student, allStudents = [], title }) {
+  const { departments: deptList } = useDepartments();
+
   const [formData, setFormData] = useState({
     student_id: '',
     full_name: '',
@@ -26,26 +29,31 @@ export default function StudentModal({ isOpen, onClose, onSubmit, student, allSt
     phone: '',
     gender: genders[0],
     dob: '',
-    department: departments[0],
+    department_id: '',
+    department: '',
     semester: semesters[0].value,
     section: sections[0],
     status: statuses[0],
-    password: '', // Only for creation
-    confirmPassword: '', // Only for creation
+    password: '',
+    confirmPassword: '',
   });
 
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (student) {
+    if (student && isOpen) {
       setFormData({
         ...student,
         student_id: student.student_id || '',
+        department_id: student.department_id || (deptList[0]?.id || ''),
+        department: student.department || (deptList[0]?.code || deptList[0]?.name || ''),
         semester: String(student.semester ?? semesters[0].value),
         password: '',
         confirmPassword: '',
       });
-    } else {
+    } else if (isOpen) {
+      const defaultDept = deptList[0];
       setFormData({
         student_id: '',
         full_name: '',
@@ -53,7 +61,8 @@ export default function StudentModal({ isOpen, onClose, onSubmit, student, allSt
         phone: '',
         gender: genders[0],
         dob: '',
-        department: departments[0],
+        department_id: defaultDept?.id || '',
+        department: defaultDept?.code || defaultDept?.name || '',
         semester: semesters[0].value,
         section: sections[0],
         status: statuses[0],
@@ -62,176 +71,235 @@ export default function StudentModal({ isOpen, onClose, onSubmit, student, allSt
       });
     }
     setErrors({});
-  }, [student, isOpen]);
+  }, [student, isOpen, deptList]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: null }));
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleDepartmentChange = (deptId) => {
+    const selectedDept = deptList.find((d) => d.id === deptId || d.code === deptId || d.name === deptId);
+    setFormData((prev) => ({
+      ...prev,
+      department_id: selectedDept?.id || deptId,
+      department: selectedDept?.code || selectedDept?.name || deptId
+    }));
+    if (errors.department) {
+      setErrors((prev) => ({ ...prev, department: null }));
+    }
+  };
+
+  const validate = () => {
     const newErrors = {};
 
-    // Basic Validation
-    if (!formData.full_name) newErrors.full_name = 'Full name is required';
-    if (!formData.email) newErrors.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Invalid email format';
-
-    // Duplicate Validation
-    if (formData.student_id) {
-      const isDuplicate = allStudents.some(s => s.student_id === formData.student_id && s.id !== student?.id);
-      if (isDuplicate) {
-        newErrors.student_id = 'Student ID already exists';
-      }
+    if (!formData.student_id.trim()) newErrors.student_id = 'Student ID is required';
+    if (!formData.full_name.trim()) newErrors.full_name = 'Full Name is required';
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
     }
 
     if (!student) {
-      if (allStudents.some(s => s.email.toLowerCase() === formData.email.toLowerCase())) {
-        newErrors.email = 'Email already exists';
+      if (!formData.password) {
+        newErrors.password = 'Password is required';
+      } else if (formData.password.length < 6) {
+        newErrors.password = 'Password must be at least 6 characters';
       }
+
       if (formData.password !== formData.confirmPassword) {
         newErrors.confirmPassword = 'Passwords do not match';
       }
-      if (formData.password.length < 6) {
-        newErrors.password = 'Password must be at least 6 characters';
-      }
     }
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-    onSubmit(formData);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    setIsSubmitting(true);
+    try {
+      await onSubmit(formData);
+      onClose();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <Modal open={isOpen} onClose={onClose} title={title}>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Personal Information */}
-        <div>
-          <h3 className="text-sm font-semibold text-[var(--color-text-secondary)] mb-3 uppercase tracking-wide">
-            Personal Information
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Input label="Full Name" name="full_name" value={formData.full_name} onChange={handleChange} required />
-              {errors.full_name && <p className="text-red-500 text-xs mt-1">{errors.full_name}</p>}
-            </div>
-            <div>
-              <Input label="Student ID" name="student_id" value={formData.student_id} onChange={handleChange} />
-              {errors.student_id && <p className="text-red-500 text-xs mt-1">{errors.student_id}</p>}
-            </div>
-            <div>
-              <Input label="Email Address" type="email" name="email" value={formData.email} onChange={handleChange} required disabled={!!student} />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-            </div>
-            <div>
-              <Input label="Phone Number" name="phone" value={formData.phone} onChange={handleChange} />
-            </div>
-            
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-[var(--color-text)] mb-1">Gender</label>
-              <Select value={formData.gender} onValueChange={(val) => handleChange({ target: { name: 'gender', value: val } })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select gender" />
-                </SelectTrigger>
-                <SelectContent>
-                  {genders.map((g) => <SelectItem key={g} value={g}>{g}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <Input label="Date of Birth" type="date" name="dob" max={new Date().toISOString().split("T")[0]} value={formData.dob || ''} onChange={handleChange} />
-          </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title || (student ? 'Edit Student' : 'Add New Student')}
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Input
+            label="Student ID *"
+            name="student_id"
+            placeholder="e.g. STU-2026-001"
+            value={formData.student_id}
+            onChange={handleChange}
+            error={errors.student_id}
+            required
+          />
+
+          <Input
+            label="Full Name *"
+            name="full_name"
+            placeholder="e.g. Maya Novak"
+            value={formData.full_name}
+            onChange={handleChange}
+            error={errors.full_name}
+            required
+          />
         </div>
 
-        {/* Academic Information */}
-        <div>
-          <h3 className="text-sm font-semibold text-[var(--color-text-secondary)] mb-3 uppercase tracking-wide">
-            Academic Information
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-            <div className="space-y-1 md:col-span-6">
-              <label className="block text-sm font-medium text-[var(--color-text)] mb-1">Department</label>
-              <Select value={formData.department} onValueChange={(val) => handleChange({ target: { name: 'department', value: val } })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select department" />
-                </SelectTrigger>
-                <SelectContent>
-                  {departments.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-1 md:col-span-3">
-              <label className="block text-sm font-medium text-[var(--color-text)] mb-1">Semester</label>
-              <Select value={formData.semester} onValueChange={(val) => handleChange({ target: { name: 'semester', value: val } })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select semester" />
-                </SelectTrigger>
-                <SelectContent>
-                  {semesters.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Input
+            label="Email Address *"
+            name="email"
+            type="email"
+            placeholder="student@university.edu"
+            value={formData.email}
+            onChange={handleChange}
+            error={errors.email}
+            required
+          />
 
-            <div className="space-y-1 md:col-span-3">
-              <label className="block text-sm font-medium text-[var(--color-text)] mb-1">Section</label>
-              <Select value={formData.section} onValueChange={(val) => handleChange({ target: { name: 'section', value: val } })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select section" />
-                </SelectTrigger>
-                <SelectContent>
-                  {sections.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-             <div className="space-y-1">
-              <label className="block text-sm font-medium text-[var(--color-text)] mb-1">Status</label>
-              <Select value={formData.status} onValueChange={(val) => handleChange({ target: { name: 'status', value: val } })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  {statuses.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+          <Input
+            label="Phone Number"
+            name="phone"
+            placeholder="+1 (555) 000-0000"
+            value={formData.phone}
+            onChange={handleChange}
+          />
         </div>
 
-        {/* Account Information (Only for new students) */}
         {!student && (
-          <div>
-            <h3 className="text-sm font-semibold text-[var(--color-text-secondary)] mb-3 uppercase tracking-wide">
-              Account Information
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Input label="Password" type="password" name="password" value={formData.password} onChange={handleChange} required={!student} />
-                {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
-              </div>
-              <div>
-                <Input label="Confirm Password" type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required={!student} />
-                {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
-              </div>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Input
+              label="Password *"
+              name="password"
+              type="password"
+              placeholder="••••••••"
+              value={formData.password}
+              onChange={handleChange}
+              error={errors.password}
+              required
+            />
+
+            <Input
+              label="Confirm Password *"
+              name="confirmPassword"
+              type="password"
+              placeholder="••••••••"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              error={errors.confirmPassword}
+              required
+            />
           </div>
         )}
 
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-[var(--color-text-secondary)]">Department</label>
+            <Select
+              value={formData.department_id || formData.department}
+              onValueChange={handleDepartmentChange}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Department" />
+              </SelectTrigger>
+              <SelectContent>
+                {deptList.map((d) => (
+                  <SelectItem key={d.id} value={d.id}>
+                    {d.name} ({d.code})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-[var(--color-text-secondary)]">Semester</label>
+            <Select
+              value={String(formData.semester)}
+              onValueChange={(val) => setFormData((prev) => ({ ...prev, semester: val }))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Semester" />
+              </SelectTrigger>
+              <SelectContent>
+                {semesters.map((s) => (
+                  <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-[var(--color-text-secondary)]">Section</label>
+            <Select
+              value={formData.section}
+              onValueChange={(val) => setFormData((prev) => ({ ...prev, section: val }))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Section" />
+              </SelectTrigger>
+              <SelectContent>
+                {sections.map((s) => (
+                  <SelectItem key={s} value={s}>Section {s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-[var(--color-text-secondary)]">Gender</label>
+            <Select
+              value={formData.gender}
+              onValueChange={(val) => setFormData((prev) => ({ ...prev, gender: val }))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Gender" />
+              </SelectTrigger>
+              <SelectContent>
+                {genders.map((g) => (
+                  <SelectItem key={g} value={g}>{g}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Input
+            label="Date of Birth"
+            name="dob"
+            type="date"
+            value={formData.dob}
+            onChange={handleChange}
+          />
+        </div>
+
         <div className="flex justify-end gap-3 pt-4 border-t border-[var(--color-border)]">
-          <Button type="button" variant="secondary" onClick={onClose}>
+          <Button type="button" variant="secondary" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>
-          <Button type="submit" variant="primary">
-            {student ? 'Update Student' : 'Add Student'}
+          <Button type="submit" variant="primary" disabled={isSubmitting}>
+            {isSubmitting ? 'Saving...' : student ? 'Update Student' : 'Add Student'}
           </Button>
         </div>
       </form>

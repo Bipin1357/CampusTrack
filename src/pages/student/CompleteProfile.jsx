@@ -5,18 +5,20 @@ import { studentService } from '../../services/studentService';
 import toast from 'react-hot-toast';
 import { Loader2, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { departments } from '../../data/departments';
+import { departmentService } from '../../services/departmentService';
 
 export default function CompleteProfile() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [initialFetchLoading, setInitialFetchLoading] = useState(true);
+  const [departments, setDepartments] = useState([]);
 
   const [formData, setFormData] = useState({
     full_name: '',
     student_id: '',
     department: '',
+    department_id: '',
     semester: '',
     section: '',
     phone: '',
@@ -27,30 +29,34 @@ export default function CompleteProfile() {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchProfileAndDepts = async () => {
       try {
-        if (!currentUser?.uid) return;
-        const profile = await studentService.getStudentById(currentUser.uid);
-        if (profile) {
-          setFormData({
-            full_name: profile.full_name || currentUser.name || '',
-            student_id: profile.student_id || '',
-            department: profile.department || '',
-            semester: profile.semester || '',
-            section: profile.section || '',
-            phone: profile.phone || '',
-            gender: profile.gender || '',
-            dob: profile.dob || ''
-          });
+        const depts = await departmentService.getDepartments();
+        setDepartments(depts || []);
+
+        if (currentUser?.uid) {
+          const profile = await studentService.getStudentById(currentUser.uid);
+          if (profile) {
+            setFormData({
+              full_name: profile.full_name || currentUser.name || '',
+              student_id: profile.student_id || '',
+              department: profile.department || '',
+              department_id: profile.department_id || '',
+              semester: profile.semester || '',
+              section: profile.section || '',
+              phone: profile.phone || '',
+              gender: profile.gender || '',
+              dob: profile.dob || ''
+            });
+          }
         }
       } catch (error) {
-        console.error('Error fetching profile:', error);
-        toast.error('Failed to load profile data.');
+        console.error('Error fetching profile or departments:', error);
       } finally {
         setInitialFetchLoading(false);
       }
     };
-    fetchProfile();
+    fetchProfileAndDepts();
   }, [currentUser]);
 
   const validate = () => {
@@ -180,13 +186,24 @@ export default function CompleteProfile() {
                 <label className="text-sm font-medium text-text-secondary pl-1 block">Department <span className="text-red-500">*</span></label>
                 <select
                   name="department"
-                  value={formData.department}
-                  onChange={handleChange}
+                  value={formData.department_id || formData.department}
+                  onChange={(e) => {
+                    const selectedId = e.target.value;
+                    const selectedDept = departments.find((d) => d.id === selectedId || d.code === selectedId || d.name === selectedId);
+                    setFormData((prev) => ({
+                      ...prev,
+                      department_id: selectedDept?.id || selectedId,
+                      department: selectedDept?.code || selectedDept?.name || selectedId
+                    }));
+                    if (errors.department) setErrors((prev) => ({ ...prev, department: null }));
+                  }}
                   className={`w-full px-4 py-3 bg-bg-primary border ${errors.department ? 'border-red-500' : 'border-border-color'} rounded-xl text-text-primary focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-colors appearance-none`}
                 >
                   <option value="">Select Department</option>
                   {departments.map((dept) => (
-                    <option key={dept} value={dept}>{dept}</option>
+                    <option key={dept.id || dept.code} value={dept.id || dept.code}>
+                      {dept.name} ({dept.code})
+                    </option>
                   ))}
                 </select>
                 {errors.department && <p className="text-red-500 text-xs pl-1">{errors.department}</p>}

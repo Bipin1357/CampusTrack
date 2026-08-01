@@ -93,6 +93,7 @@ export const studentService = {
       phone: restData.phone,
       gender: restData.gender,
       dob: restData.dob,
+      department_id: restData.department_id,
       department: restData.department,
       semester: restData.semester,
       section: restData.section,
@@ -106,7 +107,14 @@ export const studentService = {
     const { data, error } = await supabase
       .from('students')
       .insert(studentProfileData)
-      .select()
+      .select(`
+        *,
+        departments:department_id (
+          id,
+          code,
+          name
+        )
+      `)
       .single();
       
     if (error) {
@@ -127,6 +135,7 @@ export const studentService = {
       phone: restData.phone,
       gender: restData.gender,
       dob: restData.dob,
+      department_id: restData.department_id,
       department: restData.department,
       semester: restData.semester,
       section: restData.section,

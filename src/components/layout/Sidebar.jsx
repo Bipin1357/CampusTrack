@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Users, CalendarCheck, Clock, Building2,
-  FileSpreadsheet, BarChart3, Settings, ChevronsLeft, ChevronsRight, X, LogOut, BookOpen
+  Settings, ChevronsLeft, ChevronsRight, X, LogOut, BookOpen
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Avatar from '../common/Avatar'
@@ -16,8 +16,6 @@ const navItems = [
   { to: '/admin/attendance', label: 'Attendance', icon: CalendarCheck },
   { to: '/admin/timetable', label: 'Timetable', icon: Clock },
   { to: '/admin/departments', label: 'Departments', icon: Building2 },
-  { to: '/admin/examinations', label: 'Examinations', icon: FileSpreadsheet },
-  { to: '/admin/reports', label: 'Reports', icon: BarChart3 },
   { to: '/admin/settings', label: 'Settings', icon: Settings },
 ]
 

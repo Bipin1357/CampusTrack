@@ -3,20 +3,22 @@ import { X } from 'lucide-react'
 import { useEffect } from 'react'
 import { cn } from '@/lib/utils'
 
-export default function Modal({ open, onClose, title, children, footer, size = 'md' }) {
+export default function Modal({ open, isOpen, onClose, title, children, footer, size = 'md' }) {
+  const isModalOpen = open ?? isOpen ?? false;
+
   useEffect(() => {
     function onKey(e) {
       if (e.key === 'Escape') onClose?.()
     }
-    if (open) document.addEventListener('keydown', onKey)
+    if (isModalOpen) document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [open, onClose])
+  }, [isModalOpen, onClose])
 
   const widths = { sm: 'max-w-sm', md: 'max-w-lg', lg: 'max-w-2xl', xl: 'max-w-4xl' }
 
   return (
     <AnimatePresence>
-      {open && (
+      {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0 }}

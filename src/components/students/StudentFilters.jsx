@@ -1,9 +1,8 @@
 import SearchBar from '../common/SearchBar';
 import { SlidersHorizontal } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../common/Select';
-import { departments as departmentList } from '../../data/departments';
+import { useDepartments } from '@/hooks/useDepartments';
 
-const departments = ['All Departments', ...departmentList];
 const semesters = [
   { label: 'All Semesters', value: 'All Semesters' },
   { label: 'Semester 1', value: '1' },
@@ -26,6 +25,9 @@ export default function StudentFilters({
   status, setStatus,
   sort, setSort
 }) {
+  const { departments: deptList } = useDepartments();
+  const departmentOptions = ['All Departments', ...deptList.map((d) => d.code || d.name)];
+
   return (
     <div className="flex flex-col md:flex-row md:items-center gap-3 mb-5">
       <SearchBar 
@@ -42,7 +44,7 @@ export default function StudentFilters({
             <SelectValue placeholder="Department" />
           </SelectTrigger>
           <SelectContent>
-            {departments.map((d) => (
+            {departmentOptions.map((d) => (
               <SelectItem key={d} value={d}>{d}</SelectItem>
             ))}
           </SelectContent>

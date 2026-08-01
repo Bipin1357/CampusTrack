@@ -15,8 +15,7 @@ const notifications = [
 
 const labelMap = {
   dashboard: 'Dashboard', students: 'Students', attendance: 'Attendance', timetable: 'Timetable',
-  departments: 'Departments', examinations: 'Examinations',
-  reports: 'Reports', settings: 'Settings', admin: 'Admin',
+  departments: 'Departments', settings: 'Settings', admin: 'Admin',
 }
 
 function useBreadcrumbs() {
