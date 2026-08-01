@@ -243,39 +243,96 @@ export const attendanceService = {
     return { data, count };
   },
 
-  async getStudentsForAttendance(courseId, attendanceDate) {
-    // 1. Get all students enrolled in the course
+  /**
+   * Fetches students eligible for attendance of the given course on the given date,
+   * filtered by semester and section.
+   *
+   * @param {string} courseId - UUID of the selected course
+   * @param {string} attendanceDate - YYYY-MM-DD string
+   * @param {string|number} [semester] - Selected semester (e.g., 1-8)
+   * @param {string} [section] - Selected section (e.g., "A", "B")
+   * @returns {Promise<Array>} Sorted array of { student_id, student_roll, student_name, status, semester, section }
+   */
+  async getStudentsForAttendance(courseId, attendanceDate, semester = null, section = null) {
+    let targetSemester = semester;
+    let targetSection = section;
+
+    // Fallback: Resolve semester + section from timetable if not explicitly passed
+    if (!targetSemester || !targetSection) {
+      const { data: timetableEntries, error: timetableError } = await supabase
+        .from('timetable')
+        .select('semester, section')
+        .eq('course_id', courseId)
+        .limit(1);
+
+      if (timetableError) throw timetableError;
+
+      if (!timetableEntries || timetableEntries.length === 0) {
+        throw new Error(
+          'No timetable entry found for this course. ' +
+          'Please select semester and section or add the course to the timetable.'
+        );
+      }
+
+      targetSemester = timetableEntries[0].semester;
+      targetSection = timetableEntries[0].section;
+    }
+
+    if (!targetSemester || !targetSection) {
+      throw new Error(
+        'Semester and section are required to load students.'
+      );
+    }
+
+    // ── Step 1: Fetch students for this semester + section ──────────────────
+    const { data: semSecStudents, error: studentError } = await supabase
+      .from('students')
+      .select('id, full_name, student_id')
+      .eq('semester', targetSemester)
+      .eq('section', targetSection)
+      .order('full_name', { ascending: true });
+
+    if (studentError) throw studentError;
+
+    // ── Step 2: Enrollment intersection (if any active enrollments exist for this course)
     const { data: enrollments, error: enrollError } = await supabase
       .from('enrollments')
-      .select(`
-        student_id,
-        students (id, full_name, student_id)
-      `)
+      .select('student_id')
       .eq('course_id', courseId)
       .eq('status', 'active');
 
     if (enrollError) throw enrollError;
 
-    // 2. Get existing attendance for this course and date
+    let eligibleStudents = semSecStudents || [];
+
+    if (enrollments && enrollments.length > 0) {
+      // Enrollments exist → keep only the intersection of students enrolled in this course
+      const enrolledIds = new Set(enrollments.map(e => e.student_id));
+      eligibleStudents = semSecStudents.filter(s => enrolledIds.has(s.id));
+    }
+
+    // ── Step 3: Merge existing attendance status ────────────────────────────
     const { data: existingAttendance, error: attError } = await supabase
       .from('attendance')
-      .select('*')
+      .select('student_id, status')
       .eq('course_id', courseId)
       .eq('attendance_date', attendanceDate);
 
     if (attError) throw attError;
 
     const attendanceMap = {};
-    existingAttendance.forEach(a => {
+    (existingAttendance || []).forEach(a => {
       attendanceMap[a.student_id] = normalizeAttendanceStatus(a.status);
     });
 
-    return enrollments.map(e => ({
-      student_id: e.students.id,
-      student_roll: e.students.student_id,
-      student_name: e.students.full_name,
-      status: attendanceMap[e.students.id] || null
-    })).sort((a, b) => a.student_name.localeCompare(b.student_name));
+    return eligibleStudents.map(s => ({
+      student_id: s.id,
+      student_roll: s.student_id,
+      student_name: s.full_name,
+      status: attendanceMap[s.id] || null,
+      semester: targetSemester,
+      section: targetSection,
+    }));
   },
 
   async markBulkAttendance(records) {

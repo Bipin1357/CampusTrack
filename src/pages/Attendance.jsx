@@ -11,9 +11,10 @@ import Loader from '@/components/common/Loader'
 import TakeAttendanceModal from '@/components/admin/TakeAttendanceModal'
 import { attendanceService } from '@/services/attendanceService'
 import toast from 'react-hot-toast'
-import { departments as departmentList } from '@/data/departments'
+import { useDepartments } from '@/hooks/useDepartments'
 
 export default function Attendance() {
+  const { activeDepartments } = useDepartments()
   const [search, setSearch] = useState('')
   const [dept, setDept] = useState('All Departments')
   const [status, setStatus] = useState('All Status')
@@ -61,7 +62,7 @@ export default function Attendance() {
     fetchData()
   }, [])
 
-  const departments = ['All Departments', ...departmentList]
+  const departments = ['All Departments', ...activeDepartments.map(d => d.name)]
   const statuses = ['All Status', 'Present', 'Absent', 'Late']
 
   const filtered = useMemo(() => {
