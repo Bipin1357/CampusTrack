@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLocation, Link, useNavigate } from 'react-router-dom'
-import { Menu, Bell, Sun, Moon, ChevronRight, LogOut, User, Settings as SettingsIcon } from 'lucide-react'
+import { Menu, Bell, ChevronRight, LogOut, User, Settings as SettingsIcon } from 'lucide-react'
 import SearchBar from '../common/SearchBar'
 import Avatar from '../common/Avatar'
 import Dropdown, { DropdownItem, DropdownDivider } from '../common/Dropdown'
@@ -30,7 +30,6 @@ function useBreadcrumbs() {
 
 export default function StudentTopbar({ onOpenMobile }) {
   const [search, setSearch] = useState('')
-  const [dark, setDark] = useState(true)
   const crumbs = useBreadcrumbs()
   const navigate = useNavigate()
   const { currentUser, logout } = useAuth()
@@ -67,13 +66,6 @@ export default function StudentTopbar({ onOpenMobile }) {
       <SearchBar value={search} onChange={setSearch} placeholder="Search courses, notices…" className="max-w-sm hidden sm:block ml-auto" />
 
       <div className="flex items-center gap-1.5 ml-auto sm:ml-3">
-        <button
-          onClick={() => setDark((d) => !d)}
-          className="w-9 h-9 rounded-md flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-white transition-colors"
-        >
-          {dark ? <Moon className="w-[18px] h-[18px]" /> : <Sun className="w-[18px] h-[18px]" />}
-        </button>
-
         <Dropdown
           trigger={
             <button className="relative w-9 h-9 rounded-md flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-white transition-colors">

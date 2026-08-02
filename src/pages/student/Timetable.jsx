@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
-import Card from '../../components/common/Card';
 import Loader from '../../components/common/Loader';
 import EmptyState from '../../components/common/EmptyState';
-import { Calendar, Clock, MapPin } from 'lucide-react';
+import { Calendar, Clock, Sparkles } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { timetableService } from '../../services/timetableService';
 import toast from 'react-hot-toast';
-import { weekDays } from '../../data/timetableData';
+import WeeklyTimetableGrid from '../../components/student/WeeklyTimetableGrid';
+import TodayClasses from '../../components/student/TodayClasses';
 
 export default function StudentTimetable() {
   const { currentUser } = useAuth();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeView, setActiveView] = useState('week'); // 'week' | 'today'
 
   useEffect(() => {
     const fetchTimetable = async () => {
@@ -19,7 +20,7 @@ export default function StudentTimetable() {
       try {
         setLoading(true);
         const data = await timetableService.getWeeklyClasses(currentUser.uid);
-        setClasses(data);
+        setClasses(data || []);
       } catch (error) {
         toast.error('Failed to load your timetable.');
         console.error(error);
@@ -31,73 +32,66 @@ export default function StudentTimetable() {
   }, [currentUser]);
 
   if (loading) {
-    return <div className="flex h-64 items-center justify-center"><Loader size="lg" /></div>;
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loader size="lg" />
+      </div>
+    );
   }
-
-  // Group classes by day
-  const classesByDay = {};
-  weekDays.forEach(day => {
-    classesByDay[day] = classes.filter(c => c.day_of_week === day);
-  });
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-semibold">Weekly Timetable</h1>
-        <p className="text-sm text-[var(--color-text-secondary)] mt-1">View your upcoming classes and laboratory sessions.</p>
+      {/* Header & Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="font-display text-2xl font-semibold text-white">Student Timetable</h1>
+          <p className="text-sm text-[var(--color-text-secondary)] mt-1">
+            Official class schedule synced directly with Admin Timetable.
+          </p>
+        </div>
+
+        {/* View Switcher: Week View vs Today's Classes */}
+        <div className="flex items-center bg-white/5 p-1 rounded-xl border border-white/10 self-start sm:self-auto">
+          <button
+            onClick={() => setActiveView('week')}
+            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 ${
+              activeView === 'week'
+                ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
+                : 'text-[var(--color-text-secondary)] hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Calendar className="w-3.5 h-3.5" />
+            Week View
+          </button>
+          <button
+            onClick={() => setActiveView('today')}
+            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 ${
+              activeView === 'today'
+                ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
+                : 'text-[var(--color-text-secondary)] hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Clock className="w-3.5 h-3.5" />
+            Today's Classes
+          </button>
+        </div>
       </div>
 
       {classes.length === 0 ? (
-        <EmptyState 
-          icon={Calendar} 
-          title="No classes found" 
-          description="It looks like you don't have any classes scheduled yet." 
+        <EmptyState
+          icon={Calendar}
+          title="No timetable found"
+          description="There are no classes scheduled for your department, semester, and section yet."
+        />
+      ) : activeView === 'week' ? (
+        <WeeklyTimetableGrid
+          classes={classes}
+          highlightToday={true}
+          title="Weekly Timetable Grid"
         />
       ) : (
-        <div className="space-y-8">
-          {weekDays.map(day => {
-            const dayClasses = classesByDay[day];
-            if (dayClasses.length === 0) return null; // Skip days with no classes
-
-            return (
-              <div key={day}>
-                <h2 className="text-lg font-semibold text-white mb-4 border-b border-[var(--color-border)] pb-2">
-                  {day}
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {dayClasses.map(cls => (
-                    <Card key={cls.id} className="p-5 hover:border-white/20 transition-all border-l-4 border-l-[var(--color-accent-violet)]">
-                      <div className="space-y-3">
-                        <div>
-                          <h3 className="font-medium text-white text-base leading-tight">
-                            {cls.course?.course_name}
-                          </h3>
-                          <p className="text-xs text-[var(--color-text-muted)] mt-1">
-                            {cls.course?.course_code}
-                          </p>
-                        </div>
-                        
-                        <div className="pt-3 border-t border-[var(--color-border)] space-y-2 text-sm text-[var(--color-text-secondary)]">
-                          <p className="flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-[var(--color-accent-violet)]" />
-                            {cls.start_time.substring(0,5)} - {cls.end_time.substring(0,5)}
-                          </p>
-                          <p className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4 text-[var(--color-accent-violet)]" />
-                            {cls.classroom}
-                          </p>
-                          <p className="flex items-center gap-2 text-xs">
-                            <span className="w-4 text-center text-[var(--color-accent-violet)]">👨‍🏫</span>
-                            {cls.faculty_name}
-                          </p>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
+        <div className="max-w-3xl">
+          <TodayClasses />
         </div>
       )}
     </div>

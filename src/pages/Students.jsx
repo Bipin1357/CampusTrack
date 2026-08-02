@@ -7,19 +7,21 @@ import { StudentTable } from '@/components/admin'
 import { students } from '@/data/studentsData'
 import { useDepartments } from '@/hooks/useDepartments'
 
-export default function Students() {
-  const { departments: deptList } = useDepartments()
-  const departments = ['All Departments', ...deptList.map((d) => d.code || d.name)]
 const statuses = ['All Status', 'Active', 'Probation', 'Graduated']
 
 export default function Students() {
+  const { departments: deptList } = useDepartments()
+  const departments = useMemo(() => ['All Departments', ...deptList.map((d) => d.code || d.name)], [deptList])
+  
   const [search, setSearch] = useState('')
   const [dept, setDept] = useState('All Departments')
   const [status, setStatus] = useState('All Status')
 
   const filtered = useMemo(() => {
     return students.filter((s) => {
-      const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || s.rollNo.toLowerCase().includes(search.toLowerCase())
+      const name = s.name || s.full_name || ''
+      const rollNo = s.rollNo || s.student_id || ''
+      const matchesSearch = name.toLowerCase().includes(search.toLowerCase()) || rollNo.toLowerCase().includes(search.toLowerCase())
       const matchesDept = dept === 'All Departments' || s.department === dept
       const matchesStatus = status === 'All Status' || s.status === status
       return matchesSearch && matchesDept && matchesStatus

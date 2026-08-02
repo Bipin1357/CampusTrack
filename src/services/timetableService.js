@@ -155,11 +155,10 @@ export const timetableService = {
   async getTodayClasses(studentId) {
     const todayStr = this.getCurrentWeekday();
 
-    // Student should only see classes for their enrolled courses, matching their semester/section.
-    // Fetch student's profile to get their semester and section.
+    // Fetch student's profile to get department_id, department, semester, and section.
     const { data: studentData, error: studentError } = await supabase
       .from('students')
-      .select('semester, section')
+      .select('department_id, department, semester, section')
       .eq('user_id', studentId)
       .single();
 
@@ -168,14 +167,14 @@ export const timetableService = {
       throw studentError;
     }
 
-    const { semester, section } = studentData;
+    const { semester, section, department_id, department } = studentData || {};
 
     if (!semester || !section) {
       return [];
     }
 
-    // Now fetch timetable for today, matching semester & section, and where student is enrolled in the course
-    const { data, error } = await supabase
+    // Query admin timetable table filtered by student's semester and section
+    let query = supabase
       .from('timetable')
       .select(`
         *,
@@ -183,32 +182,45 @@ export const timetableService = {
           id,
           course_name,
           course_code,
-          enrollments!inner (
-            student_id,
-            status
-          )
+          course_type,
+          department_id,
+          department
         )
       `)
       .eq('day_of_week', todayStr)
       .eq('semester', semester)
       .eq('section', section)
-      .eq('course.enrollments.student_id', studentId)
-      .eq('course.enrollments.status', 'active')
       .order('start_time', { ascending: true });
+
+    const { data, error } = await query;
 
     if (error) {
       console.error("Error fetching today's student classes:", error);
       throw error;
     }
 
-    return data;
+    // Filter by department_id or department if available on course
+    if (department_id || department) {
+      return (data || []).filter(item => {
+        if (!item.course) return true;
+        if (department_id && item.course.department_id) {
+          return item.course.department_id === department_id;
+        }
+        if (department && item.course.department) {
+          return item.course.department === department;
+        }
+        return true;
+      });
+    }
+
+    return data || [];
   },
 
   async getWeeklyClasses(studentId) {
-    // Fetch student's profile to get their semester and section.
+    // Fetch student's profile to get department_id, department, semester, and section.
     const { data: studentData, error: studentError } = await supabase
       .from('students')
-      .select('semester, section')
+      .select('department_id, department, semester, section')
       .eq('user_id', studentId)
       .single();
 
@@ -217,14 +229,14 @@ export const timetableService = {
       throw studentError;
     }
 
-    const { semester, section } = studentData;
+    const { semester, section, department_id, department } = studentData || {};
 
     if (!semester || !section) {
       return [];
     }
 
-    // Now fetch timetable for the whole week, matching semester & section, and where student is enrolled
-    const { data, error } = await supabase
+    // Query admin timetable for the full week, matching semester & section
+    let query = supabase
       .from('timetable')
       .select(`
         *,
@@ -232,24 +244,37 @@ export const timetableService = {
           id,
           course_name,
           course_code,
-          enrollments!inner (
-            student_id,
-            status
-          )
+          course_type,
+          department_id,
+          department
         )
       `)
       .eq('semester', semester)
       .eq('section', section)
-      .eq('course.enrollments.student_id', studentId)
-      .eq('course.enrollments.status', 'active')
       .order('start_time', { ascending: true });
+
+    const { data, error } = await query;
 
     if (error) {
       console.error("Error fetching student weekly classes:", error);
       throw error;
     }
 
-    return data;
+    // Filter by department_id or department if present on course
+    if (department_id || department) {
+      return (data || []).filter(item => {
+        if (!item.course) return true;
+        if (department_id && item.course.department_id) {
+          return item.course.department_id === department_id;
+        }
+        if (department && item.course.department) {
+          return item.course.department === department;
+        }
+        return true;
+      });
+    }
+
+    return data || [];
   },
 
   async getClassesByCourse(courseId) {

@@ -28,71 +28,116 @@ export const attendanceService = {
    * Expects a 'timetable' table linked to 'courses'.
    */
   async getTodayClasses(studentId) {
+    if (!studentId) return [];
     const todayStr = this.getCurrentWeekday();
 
-    // Query timetable, join courses, join enrollments to filter by student
-    const { data, error } = await supabase
-      .from('timetable')
-      .select(`
-        id,
-        start_time,
-        end_time,
-        room,
-        course:courses!inner (
+    try {
+      // 1. Query timetable using enrollments join for active student enrollments
+      let { data, error } = await supabase
+        .from('timetable')
+        .select(`
           id,
-          course_name,
-          faculty,
-          enrollments!inner (
-            student_id,
-            status
+          start_time,
+          end_time,
+          classroom,
+          faculty_name,
+          course:courses!inner (
+            id,
+            course_name,
+            enrollments!inner (
+              student_id,
+              status
+            )
           )
-        )
-      `)
-      .eq('weekday', todayStr)
-      .eq('course.enrollments.student_id', studentId)
-      .eq('course.enrollments.status', 'active');
+        `)
+        .eq('day_of_week', todayStr)
+        .eq('course.enrollments.student_id', studentId)
+        .eq('course.enrollments.status', 'active');
 
-    if (error) {
-      console.error("Error fetching today's classes:", error);
-      throw error;
+      // 2. Fallback: if enrollments join is empty or encounters error, query timetable by student's semester and section
+      if (error || !data || data.length === 0) {
+        const { data: student } = await supabase
+          .from('students')
+          .select('semester, section')
+          .eq('id', studentId)
+          .maybeSingle();
+
+        if (student && student.semester && student.section) {
+          const { data: secData, error: secError } = await supabase
+            .from('timetable')
+            .select(`
+              id,
+              start_time,
+              end_time,
+              classroom,
+              faculty_name,
+              course:courses!inner (
+                id,
+                course_name
+              )
+            `)
+            .eq('day_of_week', todayStr)
+            .eq('semester', student.semester)
+            .eq('section', student.section);
+
+          if (!secError && secData) {
+            data = secData;
+            error = null;
+          }
+        }
+      }
+
+      if (error || !data || data.length === 0) {
+        return [];
+      }
+
+      // Map to a flatter structure
+      return data.map(entry => ({
+        timetable_id: entry.id,
+        course_id: entry.course?.id,
+        course_name: entry.course?.course_name || 'Class',
+        faculty: entry.faculty_name || 'Faculty',
+        start_time: entry.start_time,
+        end_time: entry.end_time,
+        classroom: entry.classroom || 'N/A',
+        room: entry.classroom || 'N/A'
+      })).sort((a, b) => (a.start_time || '').localeCompare(b.start_time || ''));
+    } catch (err) {
+      console.warn("Error fetching today's classes:", err);
+      return [];
     }
-
-    // Map to a flatter structure
-    return data.map(entry => ({
-      timetable_id: entry.id,
-      course_id: entry.course.id,
-      course_name: entry.course.course_name,
-      faculty: entry.course.faculty,
-      start_time: entry.start_time,
-      end_time: entry.end_time,
-      room: entry.room
-    })).sort((a, b) => a.start_time.localeCompare(b.start_time));
   },
 
   /**
    * Fetches all attendance records for a student for today.
    */
   async getTodayAttendance(studentId) {
+    if (!studentId) return {};
     const todayDate = this.getTodayDateString();
 
-    const { data, error } = await supabase
-      .from('attendance')
-      .select('*')
-      .eq('student_id', studentId)
-      .eq('attendance_date', todayDate);
+    try {
+      const { data, error } = await supabase
+        .from('attendance')
+        .select('*')
+        .eq('student_id', studentId)
+        .eq('attendance_date', todayDate);
 
-    if (error) {
-      console.error("Error fetching today's attendance:", error);
-      throw error;
+      if (error) {
+        console.error("Error fetching today's attendance:", error);
+        return {};
+      }
+
+      // Map into an object for easier O(1) lookups by course_id
+      const attendanceMap = {};
+      (data || []).forEach(record => {
+        attendanceMap[record.course_id] = record;
+      });
+
+      return attendanceMap;
+    } catch (err) {
+      console.warn("Error fetching today's attendance:", err);
+      return {};
     }
-
-    // Map into an object for easier O(1) lookups by course_id
-    const attendanceMap = {};
-    data.forEach(record => {
-      attendanceMap[record.course_id] = record;
-    });
-
-    return attendanceMap;
   },
 
   /**
