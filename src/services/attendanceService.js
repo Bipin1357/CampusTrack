@@ -24,6 +24,21 @@ export const attendanceService = {
   },
 
   /**
+   * Helper to format 24h time string (e.g. "09:00:00") into 12h AM/PM string (e.g. "09:00 AM")
+   */
+  formatTime12Hour(timeStr) {
+    if (!timeStr) return '';
+    const parts = String(timeStr).split(':');
+    let hours = parseInt(parts[0], 10);
+    const minutes = parts[1] || '00';
+    if (isNaN(hours)) return timeStr;
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    if (hours === 0) hours = 12;
+    return `${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
+  },
+
+  /**
    * Fetches today's classes for a specific student based on their enrollments.
    * Expects a 'timetable' table linked to 'courses'.
    */
@@ -127,10 +142,18 @@ export const attendanceService = {
         return {};
       }
 
-      // Map into an object for easier O(1) lookups by course_id
+      // Map into an object for easy lookups by timetable_id and course_id
       const attendanceMap = {};
       (data || []).forEach(record => {
-        attendanceMap[record.course_id] = record;
+        if (record.timetable_id) {
+          attendanceMap[record.timetable_id] = record;
+        }
+        if (record.course_id) {
+          attendanceMap[record.course_id] = record;
+        }
+        if (record.timetable_id && record.course_id) {
+          attendanceMap[`${record.timetable_id}_${record.course_id}`] = record;
+        }
       });
 
       return attendanceMap;
@@ -141,67 +164,127 @@ export const attendanceService = {
   },
 
   /**
-   * Validates time logic.
-   * attendance_start = endTime - 10 mins
-   * attendance_end = endTime + 30 mins
+   * Calculates 50-minute attendance window status.
+   * attendanceOpen = classEndTime
+   * attendanceClose = classEndTime + 50 minutes
    * 
-   * @param {string} endTimeStr - Format "HH:mm:ss"
-   * @returns {object} { isOpen, status, diffSeconds }
+   * @param {string} endTimeStr - Format "HH:mm:ss" or "HH:mm"
+   * @returns {object} { isOpen, status, diffSeconds, openTimeStr, closeTimeStr }
    */
   getAttendanceWindowStatus(endTimeStr) {
+    if (!endTimeStr) {
+      return { isOpen: false, status: 'Closed', diffSeconds: 0, openTimeStr: '', closeTimeStr: '' };
+    }
+
     const now = new Date();
-    
-    // Parse endTime string to a Date object for today
-    const [hours, minutes, seconds = 0] = endTimeStr.split(':').map(Number);
-    const endTime = new Date(now);
-    endTime.setHours(hours, minutes, seconds, 0);
+    const parts = String(endTimeStr).split(':').map(Number);
+    const hours = parts[0] || 0;
+    const minutes = parts[1] || 0;
+    const seconds = parts[2] || 0;
 
-    // Calculate window bounds
-    const windowStart = new Date(endTime.getTime() - 10 * 60 * 1000); // 10 mins before end
-    const windowEnd = new Date(endTime.getTime() + 30 * 60 * 1000);   // 30 mins after end
+    const windowOpen = new Date(now);
+    windowOpen.setHours(hours, minutes, seconds, 0);
 
-    if (now < windowStart) {
-      const diffSeconds = Math.floor((windowStart - now) / 1000);
-      return { isOpen: false, status: 'Upcoming', diffSeconds };
-    } else if (now >= windowStart && now <= windowEnd) {
-      const diffSeconds = Math.floor((windowEnd - now) / 1000);
-      return { isOpen: true, status: 'Open', diffSeconds };
+    const windowClose = new Date(windowOpen.getTime() + 50 * 60 * 1000);
+
+    const openTimeFormatted = this.formatTime12Hour(endTimeStr);
+    const closeHours = windowClose.getHours().toString().padStart(2, '0');
+    const closeMins = windowClose.getMinutes().toString().padStart(2, '0');
+    const closeTimeFormatted = this.formatTime12Hour(`${closeHours}:${closeMins}:00`);
+
+    if (now < windowOpen) {
+      const diffSeconds = Math.floor((windowOpen - now) / 1000);
+      return {
+        isOpen: false,
+        status: 'Pending',
+        diffSeconds,
+        openTimeStr: openTimeFormatted,
+        closeTimeStr: closeTimeFormatted
+      };
+    } else if (now >= windowOpen && now <= windowClose) {
+      const diffSeconds = Math.floor((windowClose - now) / 1000);
+      return {
+        isOpen: true,
+        status: 'Open',
+        diffSeconds,
+        openTimeStr: openTimeFormatted,
+        closeTimeStr: closeTimeFormatted
+      };
     } else {
-      return { isOpen: false, status: 'Closed', diffSeconds: 0 };
+      return {
+        isOpen: false,
+        status: 'Closed',
+        diffSeconds: 0,
+        openTimeStr: openTimeFormatted,
+        closeTimeStr: closeTimeFormatted
+      };
     }
   },
 
   /**
-   * Marks a student as present.
+   * Marks a student as present during open window.
    */
-  async markAttendance(studentId, courseId, endTimeStr) {
-    // 1. Validate window logic locally before sending to DB to avoid unnecessary calls
+  async markAttendance(studentId, courseId, timetableId, endTimeStr) {
+    // 1. Validate window logic locally
     const windowStatus = this.getAttendanceWindowStatus(endTimeStr);
-    
     if (!windowStatus.isOpen) {
-      throw new Error("Attendance window is not open.");
+      throw new Error("Attendance window is closed or not open yet.");
     }
 
     const todayDate = this.getTodayDateString();
 
-    // 2. Insert record
-    const { data, error } = await supabase
+    // 2. Client-side check for existing record
+    let existingQuery = supabase
       .from('attendance')
-      .insert([
-        {
-          student_id: studentId,
-          course_id: courseId,
-          attendance_date: todayDate,
-          status: 'present',
-          marked_at: new Date().toISOString()
-        }
-      ])
+      .select('id')
+      .eq('student_id', studentId)
+      .eq('attendance_date', todayDate);
+
+    if (timetableId) {
+      existingQuery = existingQuery.eq('timetable_id', timetableId);
+    } else if (courseId) {
+      existingQuery = existingQuery.eq('course_id', courseId);
+    }
+
+    const { data: existingRecords } = await existingQuery;
+    if (existingRecords && existingRecords.length > 0) {
+      throw new Error('Attendance already marked.');
+    }
+
+    // 3. Insert record
+    const payload = {
+      student_id: studentId,
+      course_id: courseId,
+      attendance_date: todayDate,
+      status: 'present',
+      marked_at: new Date().toISOString()
+    };
+
+    if (timetableId) {
+      payload.timetable_id = timetableId;
+    }
+
+    let { data, error } = await supabase
+      .from('attendance')
+      .insert([payload])
       .select()
       .single();
 
+    if (error && error.code === '42703' && timetableId) {
+      // If timetable_id column doesn't exist in schema, retry without it
+      delete payload.timetable_id;
+      const res = await supabase
+        .from('attendance')
+        .insert([payload])
+        .select()
+        .single();
+      data = res.data;
+      error = res.error;
+    }
+
     if (error) {
-      if (error.code === '23505') { // Unique constraint violation
-        throw new Error('Attendance already marked for this course today.');
+      if (error.code === '23505') {
+        throw new Error('Attendance already marked.');
       }
       throw error;
     }
@@ -477,5 +560,64 @@ export const attendanceService = {
       month: monthNames[i],
       rate: stat.total === 0 ? 0 : Math.round((stat.present / stat.total) * 100)
     }));
+  },
+
+  async getStudentAttendanceHistory(studentId) {
+    if (!studentId) return [];
+
+    try {
+      // Query attendance with course & timetable details
+      const { data, error } = await supabase
+        .from('attendance')
+        .select(`
+          id,
+          attendance_date,
+          status,
+          marked_at,
+          timetable_id,
+          course:courses (id, course_name, course_code),
+          timetable:timetable (id, faculty_name)
+        `)
+        .eq('student_id', studentId)
+        .order('attendance_date', { ascending: false })
+        .order('marked_at', { ascending: false });
+
+      if (error) {
+        // Fallback without timetable join if constraint isn't established
+        const { data: fallbackData, error: fbErr } = await supabase
+          .from('attendance')
+          .select(`
+            id,
+            attendance_date,
+            status,
+            marked_at,
+            course:courses (id, course_name, course_code)
+          `)
+          .eq('student_id', studentId)
+          .order('attendance_date', { ascending: false });
+
+        if (fbErr) throw fbErr;
+        return (fallbackData || []).map(r => ({
+          id: r.id,
+          date: r.attendance_date,
+          subject: r.course?.course_name || 'Course',
+          faculty: 'Faculty',
+          status: r.status ? (r.status.charAt(0).toUpperCase() + r.status.slice(1)) : 'Unknown',
+          marked_at: r.marked_at
+        }));
+      }
+
+      return (data || []).map(r => ({
+        id: r.id,
+        date: r.attendance_date,
+        subject: r.course?.course_name || 'Course',
+        faculty: r.timetable?.faculty_name || 'Faculty',
+        status: r.status ? (r.status.charAt(0).toUpperCase() + r.status.slice(1)) : 'Unknown',
+        marked_at: r.marked_at
+      }));
+    } catch (err) {
+      console.warn("Error fetching student attendance history:", err);
+      return [];
+    }
   }
 };

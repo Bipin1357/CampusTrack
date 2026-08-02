@@ -17,13 +17,13 @@ function HowItWorks() {
           </div>
           <div className="step reveal in reveal-delay-2">
             <div className="step-num">2</div>
-            <h3>Add your semester and subjects</h3>
-            <p>Set up your subjects, syllabus, and academic goals.</p>
+            <h3>Set up your profile</h3>
+            <p>Select your department, semester, and section to view your personalized schedule.</p>
           </div>
           <div className="step reveal in reveal-delay-3">
             <div className="step-num">3</div>
             <h3>Track your journey effortlessly</h3>
-            <p>Watch your attendance, syllabus, and GPA update in real time.</p>
+            <p>Mark daily class attendance, view weekly timetables, and track academic records in real time.</p>
           </div>
         </div>
       </div>

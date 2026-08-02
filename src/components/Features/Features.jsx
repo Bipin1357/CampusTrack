@@ -7,41 +7,40 @@ function Features() {
         <div className="section-head reveal in">
           <span className="eyebrow">Everything in one dashboard</span>
           <h2>Built for how students actually study</h2>
-          <p>Six focused tools that replace spreadsheets, sticky notes, and scattered PDFs.</p>
+          <p>Six focused tools to manage your timetable, attendance, academic records, and campus life.</p>
         </div>
         <div className="feature-grid">
           <div className="feature-card reveal in reveal-delay-1">
             <div className="feature-icon">📅</div>
             <h3>Attendance Tracker</h3>
             <p>
-              Track subject-wise attendance and know exactly how many classes you need to maintain your target
-              percentage.
+              Interactive attendance cards with 50-minute real-time window countdowns to mark daily class attendance.
             </p>
           </div>
           <div className="feature-card reveal in reveal-delay-2">
-            <div className="feature-icon">📚</div>
-            <h3>Syllabus Tracker</h3>
-            <p>Break every subject into modules and topics and mark completed lessons as you go.</p>
+            <div className="feature-icon">⏰</div>
+            <h3>Weekly Timetable</h3>
+            <p>View your daily schedule and full weekly class timetable organized by your semester and section.</p>
           </div>
           <div className="feature-card reveal in reveal-delay-3">
-            <div className="feature-icon">🎯</div>
-            <h3>GPA Goal Calculator</h3>
-            <p>Calculate the average SGPA required each semester to reach your dream CGPA.</p>
+            <div className="feature-icon">📄</div>
+            <h3>Academic Records</h3>
+            <p>Store and track your semester SGPA, CGPA, earned credits, and academic history securely.</p>
           </div>
           <div className="feature-card reveal in reveal-delay-1">
-            <div className="feature-icon">📄</div>
-            <h3>Result Vault</h3>
-            <p>Store semester result PDFs securely and access them anytime, from any device.</p>
+            <div className="feature-icon">🔔</div>
+            <h3>Campus Notices</h3>
+            <p>Stay updated with official announcement updates, exam alerts, and campus notifications.</p>
           </div>
           <div className="feature-card reveal in reveal-delay-2">
-            <div className="feature-icon">📈</div>
-            <h3>Academic Dashboard</h3>
-            <p>Visualize attendance, syllabus completion, GPA, and overall progress at a glance.</p>
+            <div className="feature-icon">👤</div>
+            <h3>Profile Management</h3>
+            <p>Manage your student profile information, department details, semester, and section easily.</p>
           </div>
           <div className="feature-card reveal in reveal-delay-3">
-            <div className="feature-icon">👤</div>
-            <h3>Personal Profile</h3>
-            <p>Manage your academic information, semesters, and subjects from one place.</p>
+            <div className="feature-icon">📈</div>
+            <h3>Admin Dashboard</h3>
+            <p>Comprehensive admin control panel for managing students, departments, timetables, and overall attendance.</p>
           </div>
         </div>
       </div>

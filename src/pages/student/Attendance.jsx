@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { attendanceService } from '../../services/attendanceService';
 import Card from '../../components/common/Card';
-import Button from '../../components/common/Button';
-import Badge from '../../components/common/Badge';
 import Loader from '../../components/common/Loader';
-import EmptyState from '../../components/common/EmptyState';
 import StatCard from '../../components/common/StatCard';
 import AttendanceLineChart from '../../components/charts/AttendanceLineChart';
-import { Clock, MapPin, Calendar, UserCheck, XCircle, AlertCircle, TrendingUp, CheckCircle } from 'lucide-react';
+import TodayClassCard from '../../components/student/TodayClassCard';
+import AttendanceHistoryTable from '../../components/student/AttendanceHistoryTable';
+import { Calendar, AlertCircle, TrendingUp, CheckCircle, XCircle, BookOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function StudentAttendance() {
@@ -16,17 +15,18 @@ export default function StudentAttendance() {
   const [classes, setClasses] = useState([]);
   const [attendanceRecords, setAttendanceRecords] = useState({});
   const [loading, setLoading] = useState(true);
-  
-  // New Stats State
+
+  // Statistics State
   const [stats, setStats] = useState({ present: 0, absent: 0, late: 0, rate: 100, total: 0 });
   const [subjectBreakdown, setSubjectBreakdown] = useState([]);
   const [monthlyTrend, setMonthlyTrend] = useState([]);
-  
-  // Timer to force re-render for countdowns
-  const [now, setNow] = useState(new Date());
+  const [history, setHistory] = useState([]);
+
+  // Timer to force re-render every second for live countdowns
+  const [, setTick] = useState(0);
 
   useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 1000);
+    const timer = setInterval(() => setTick(t => t + 1), 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -38,19 +38,22 @@ export default function StudentAttendance() {
     }
     try {
       setLoading(true);
-      const [todayClasses, todayAttendance, statsData, breakdown, trend] = await Promise.all([
+      const [todayClasses, todayAttendance, statsData, breakdown, trend, historyData] = await Promise.all([
         attendanceService.getTodayClasses(studentId),
         attendanceService.getTodayAttendance(studentId),
         attendanceService.getStudentAttendanceStats(studentId),
         attendanceService.getStudentSubjectBreakdown(studentId),
-        attendanceService.getStudentMonthlyChart(studentId)
+        attendanceService.getStudentMonthlyChart(studentId),
+        attendanceService.getStudentAttendanceHistory(studentId)
       ]);
-      setClasses(todayClasses);
-      setAttendanceRecords(todayAttendance);
-      setStats(statsData);
-      setSubjectBreakdown(breakdown);
-      setMonthlyTrend(trend);
+      setClasses(todayClasses || []);
+      setAttendanceRecords(todayAttendance || {});
+      setStats(statsData || { present: 0, absent: 0, late: 0, rate: 100, total: 0 });
+      setSubjectBreakdown(breakdown || []);
+      setMonthlyTrend(trend || []);
+      setHistory(historyData || []);
     } catch (error) {
+      console.error("Error loading attendance data:", error);
       toast.error('Failed to load attendance data');
     } finally {
       setLoading(false);
@@ -61,128 +64,16 @@ export default function StudentAttendance() {
     fetchData();
   }, [currentUser]);
 
-  const handleMarkAttendance = async (courseId, endTimeStr) => {
+  const handleMarkAttendance = async (courseId, timetableId, endTimeStr) => {
     try {
       const studentId = currentUser?.studentProfile?.id;
       if (!studentId) throw new Error('Student profile is unavailable.');
-      await attendanceService.markAttendance(studentId, courseId, endTimeStr);
+      await attendanceService.markAttendance(studentId, courseId, timetableId, endTimeStr);
       toast.success('Attendance marked successfully!');
-      fetchData(); // Refresh to get the updated record
+      await fetchData(); // Automatically refresh stats, history, and today's classes
     } catch (error) {
       toast.error(error.message || 'Failed to mark attendance');
     }
-  };
-
-  const formatCountdown = (totalSeconds) => {
-    const h = Math.floor(totalSeconds / 3600);
-    const m = Math.floor((totalSeconds % 3600) / 60);
-    const s = totalSeconds % 60;
-    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  };
-
-  const renderClassCard = (cls) => {
-    const record = attendanceRecords[cls.course_id];
-    const { isOpen, status, diffSeconds } = attendanceService.getAttendanceWindowStatus(cls.end_time);
-
-    let badgeTone = 'neutral';
-    let badgeText = 'Unknown';
-    let actionElement = null;
-
-    if (record) {
-      badgeTone = 'success';
-      badgeText = 'Present';
-      actionElement = (
-        <div className="flex flex-col items-center sm:items-end">
-          <p className="text-emerald-400 font-medium flex items-center gap-2 mb-1">
-            <UserCheck className="w-5 h-5" /> Attendance Submitted
-          </p>
-          <p className="text-xs text-[var(--color-text-muted)]">
-            Marked at {new Date(record.marked_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </p>
-        </div>
-      );
-    } else if (status === 'Closed') {
-      badgeTone = 'danger';
-      badgeText = 'Absent';
-      actionElement = (
-        <div className="flex flex-col items-center sm:items-end">
-           <p className="text-rose-400 font-medium flex items-center gap-2 mb-1">
-            <XCircle className="w-5 h-5" /> Attendance Missed
-          </p>
-          <p className="text-xs text-[var(--color-text-muted)]">Window closed</p>
-        </div>
-      );
-    } else if (isOpen) {
-      badgeTone = 'warning'; 
-      badgeText = 'Window Open';
-      actionElement = (
-        <div className="flex flex-col items-center sm:items-end gap-2">
-          <Button variant="primary" onClick={() => handleMarkAttendance(cls.course_id, cls.end_time)}>
-            Mark Attendance
-          </Button>
-          <p className="text-xs text-[var(--color-text-muted)]">
-            Closes in {formatCountdown(diffSeconds)}
-          </p>
-        </div>
-      );
-    } else if (status === 'Upcoming') {
-      badgeTone = 'info';
-      badgeText = 'Upcoming';
-      if (diffSeconds < 3600) {
-         actionElement = (
-          <div className="flex flex-col items-center sm:items-end">
-            <Button variant="secondary" disabled>
-              Mark Attendance
-            </Button>
-            <p className="text-xs text-[var(--color-warning)] mt-2">
-              Opens in {formatCountdown(diffSeconds)}
-            </p>
-          </div>
-        );
-      } else {
-         actionElement = (
-          <div className="flex flex-col items-center sm:items-end">
-            <Button variant="secondary" disabled>
-              Mark Attendance
-            </Button>
-          </div>
-        );
-      }
-    }
-
-    return (
-      <Card key={cls.timetable_id} className="p-6 transition-all hover:border-white/20">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="space-y-3 flex-1">
-            <div className="flex items-center gap-3">
-              <h3 className="text-lg font-semibold text-white">{cls.course_name}</h3>
-              <Badge tone={badgeTone} dot>{badgeText}</Badge>
-            </div>
-            
-            <div className="flex flex-wrap items-center gap-4 text-sm text-[var(--color-text-secondary)]">
-              <span className="flex items-center gap-1.5">
-                <Calendar className="w-4 h-4 text-[var(--color-accent-violet)]" />
-                {cls.faculty}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Clock className="w-4 h-4 text-[var(--color-accent-violet)]" />
-                {cls.start_time.substring(0,5)} - {cls.end_time.substring(0,5)}
-              </span>
-              {cls.room && (
-                <span className="flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-[var(--color-accent-violet)]" />
-                  {cls.room}
-                </span>
-              )}
-            </div>
-          </div>
-          
-          <div className="w-full sm:w-auto flex justify-center sm:justify-end border-t sm:border-t-0 border-[var(--color-border)] pt-4 sm:pt-0 mt-2 sm:mt-0">
-            {actionElement}
-          </div>
-        </div>
-      </Card>
-    );
   };
 
   if (loading) {
@@ -194,80 +85,136 @@ export default function StudentAttendance() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-10">
+      {/* Page Header */}
       <div>
-        <h1 className="font-display text-2xl font-semibold">Attendance Overview</h1>
+        <h1 className="font-display text-2xl font-bold text-white tracking-tight">
+          Student Attendance Portal
+        </h1>
         <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-          Monitor your attendance history and view today's schedule.
+          Mark attendance for today's scheduled classes and track your overall attendance record.
         </p>
       </div>
 
+      {/* Low Attendance Threshold Warning Banner */}
       {stats.total > 0 && stats.rate < 75 && (
-        <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 p-4 rounded-[var(--radius-sm)] flex items-start gap-3 animate-in slide-in-from-top-2">
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+        <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 p-4 rounded-xl flex items-start gap-3.5 shadow-lg animate-in slide-in-from-top-2">
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-rose-400" />
           <div>
-            <h4 className="font-semibold text-rose-300">Low Attendance Warning</h4>
-            <p className="text-sm mt-1">Your overall attendance is {stats.rate}%, which is below the required 75% threshold. Please ensure you attend upcoming classes.</p>
+            <h4 className="font-semibold text-rose-200 text-sm">Low Attendance Warning</h4>
+            <p className="text-xs text-rose-300/90 mt-1">
+              Your overall attendance rate is currently <span className="font-bold text-rose-200">{stats.rate}%</span>, which is below the mandatory 75% threshold. Please attend upcoming classes to avoid academic penalties.
+            </p>
           </div>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Dynamic Statistics Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Overall Attendance" value={stats.rate} unit="%" icon={TrendingUp} />
         <StatCard label="Classes Attended" value={stats.present + stats.late} icon={CheckCircle} />
         <StatCard label="Classes Missed" value={stats.absent} icon={XCircle} />
+        <StatCard label="Total Classes" value={stats.total} icon={BookOpen} />
       </div>
 
+      {/* Today's Scheduled Classes Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-xl font-bold text-white flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-purple-400" />
+            Today's Classes
+          </h2>
+          <span className="text-xs text-[var(--color-text-muted)] font-mono">
+            {attendanceService.getCurrentWeekday()}
+          </span>
+        </div>
+
+        {classes.length === 0 ? (
+          <Card className="p-10 text-center space-y-3 bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-2xl shadow-sm">
+            <div className="w-16 h-16 rounded-full bg-purple-500/10 text-purple-400 flex items-center justify-center mx-auto text-3xl">
+              📅
+            </div>
+            <h3 className="font-bold text-white text-lg font-display">No classes scheduled today</h3>
+            <p className="text-sm font-medium text-purple-300">Enjoy your free day!</p>
+            <p className="text-xs text-[var(--color-text-muted)] max-w-sm mx-auto">
+              No attendance needs to be marked today.
+            </p>
+          </Card>
+        ) : (
+          <div className="space-y-4">
+            {classes.map((cls) => {
+              const record =
+                attendanceRecords[cls.timetable_id] ||
+                attendanceRecords[cls.course_id] ||
+                attendanceRecords[`${cls.timetable_id}_${cls.course_id}`];
+
+              return (
+                <TodayClassCard
+                  key={cls.timetable_id || cls.course_id}
+                  cls={cls}
+                  attendanceRecord={record}
+                  onMarkAttendance={handleMarkAttendance}
+                />
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Subject Breakdown & Monthly Trend */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="p-5 flex flex-col h-full">
-          <h3 className="font-display text-lg font-semibold mb-4">Subject Breakdown</h3>
+        <Card className="p-6 flex flex-col h-full border border-[var(--color-border)] rounded-2xl">
+          <h3 className="font-display text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-purple-400" />
+            Subject Breakdown
+          </h3>
           {subjectBreakdown.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center">
+            <div className="flex-1 flex items-center justify-center py-10">
               <p className="text-sm text-[var(--color-text-muted)]">No subject data available yet.</p>
             </div>
           ) : (
             <div className="space-y-4">
               {subjectBreakdown.map((sub, i) => (
-                <div key={i}>
-                  <div className="flex justify-between text-sm mb-2">
+                <div key={i} className="space-y-1.5">
+                  <div className="flex justify-between text-sm">
                     <span className="text-white font-medium">{sub.subject}</span>
-                    <span className={sub.rate < 75 ? 'text-rose-400 font-semibold' : 'text-emerald-400 font-semibold'}>{sub.rate}%</span>
+                    <span className={sub.rate < 75 ? 'text-rose-400 font-semibold' : 'text-emerald-400 font-semibold'}>
+                      {sub.rate}%
+                    </span>
                   </div>
                   <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                    <div 
-                      className={`h-full rounded-full transition-all duration-1000 ${sub.rate < 75 ? 'bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.6)]' : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]'}`} 
+                    <div
+                      className={`h-full rounded-full transition-all duration-1000 ${
+                        sub.rate < 75
+                          ? 'bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.6)]'
+                          : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]'
+                      }`}
                       style={{ width: `${Math.max(sub.rate, 2)}%` }}
                     />
                   </div>
-                  <p className="text-xs text-[var(--color-text-muted)] mt-1.5">{sub.attended} of {sub.total} classes attended</p>
+                  <p className="text-xs text-[var(--color-text-muted)]">
+                    {sub.attended} of {sub.total} classes attended
+                  </p>
                 </div>
               ))}
             </div>
           )}
         </Card>
 
-        <Card className="p-5 flex flex-col h-full">
-          <h3 className="font-display text-lg font-semibold mb-4">Monthly Trend</h3>
+        <Card className="p-6 flex flex-col h-full border border-[var(--color-border)] rounded-2xl">
+          <h3 className="font-display text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-purple-400" />
+            Monthly Trend
+          </h3>
           <div className="flex-1 h-64 min-h-[250px] -ml-2">
             <AttendanceLineChart data={monthlyTrend.length > 0 ? monthlyTrend : [{ month: 'Jan', rate: 0 }]} />
           </div>
         </Card>
       </div>
 
-      <div className="pt-4 border-t border-white/5">
-        <h2 className="font-display text-xl font-semibold mb-6">Today's Classes</h2>
-        
-        {classes.length === 0 ? (
-          <EmptyState 
-            icon={Calendar} 
-            title="No classes scheduled for today" 
-            description="You don't have any classes in your timetable for today. Enjoy your day!" 
-          />
-        ) : (
-          <div className="space-y-4">
-            {classes.map(renderClassCard)}
-          </div>
-        )}
+      {/* Attendance History Table */}
+      <div className="pt-2">
+        <AttendanceHistoryTable history={history} />
       </div>
     </div>
   );

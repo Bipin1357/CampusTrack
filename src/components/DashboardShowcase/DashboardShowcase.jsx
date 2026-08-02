@@ -47,13 +47,13 @@ function DashboardShowcase() {
               <span className="dot"></span>Attendance
             </div>
             <div className="sb-item">
-              <span className="dot"></span>Syllabus
+              <span className="dot"></span>Timetable
             </div>
             <div className="sb-item">
-              <span className="dot"></span>GPA Calculator
+              <span className="dot"></span>Academic Records
             </div>
             <div className="sb-item">
-              <span className="dot"></span>Result Vault
+              <span className="dot"></span>Notices
             </div>
             <div className="sb-item">
               <span className="dot"></span>Profile
@@ -61,22 +61,22 @@ function DashboardShowcase() {
           </div>
           <div className="showcase-main">
             <div className="showcase-top">
-              <h4>Semester Overview</h4>
-              <span>Semester 4 · 2026</span>
+              <h4>Student Dashboard Overview</h4>
+              <span>Semester 4 &bull; 2026</span>
             </div>
             <div className="sc-grid">
               <div className="sc-stat">
-                <div className="lbl">ATTENDANCE</div>
+                <div className="lbl">ATTENDANCE RATE</div>
                 <div className="val">82%</div>
                 <div className="bar-track">
                   <div className="bar-fill" data-width="82" style={{ width: 0 }}></div>
                 </div>
               </div>
               <div className="sc-stat">
-                <div className="lbl">SYLLABUS COMPLETE</div>
-                <div className="val">58%</div>
+                <div className="lbl">TODAY'S CLASSES</div>
+                <div className="val">3 Classes</div>
                 <div className="bar-track">
-                  <div className="bar-fill" data-width="58" style={{ width: 0 }}></div>
+                  <div className="bar-fill" data-width="100" style={{ width: 0 }}></div>
                 </div>
               </div>
               <div className="sc-stat">
@@ -87,10 +87,10 @@ function DashboardShowcase() {
                 </div>
               </div>
               <div className="sc-stat">
-                <div className="lbl">SEMESTER PROGRESS</div>
-                <div className="val">67%</div>
+                <div className="lbl">PROFILE COMPLETION</div>
+                <div className="val">100%</div>
                 <div className="bar-track">
-                  <div className="bar-fill" data-width="67" style={{ width: 0 }}></div>
+                  <div className="bar-fill" data-width="100" style={{ width: 0 }}></div>
                 </div>
               </div>
             </div>
@@ -121,18 +121,18 @@ function DashboardShowcase() {
               <div className="activity-card">
                 <h5>Recent Activity</h5>
                 <div className="activity-row">
-                  <span className="adot"></span>Marked Physics attendance{' '}
+                  <span className="adot"></span>Marked Data Structures attendance{' '}
                   <span className="atime">2h ago</span>
                 </div>
                 <div className="activity-row">
-                  <span className="adot"></span>Completed Module 3 — DBMS{' '}
+                  <span className="adot"></span>Viewed Campus Notice{' '}
                   <span className="atime">1d ago</span>
                 </div>
                 <div className="activity-row">
-                  <span className="adot"></span>Uploaded Sem 3 results <span className="atime">3d ago</span>
+                  <span className="adot"></span>Updated Academic Record <span className="atime">3d ago</span>
                 </div>
                 <div className="activity-row">
-                  <span className="adot"></span>Updated GPA goal to 8.8 <span className="atime">5d ago</span>
+                  <span className="adot"></span>Completed Profile Details <span className="atime">5d ago</span>
                 </div>
               </div>
             </div>

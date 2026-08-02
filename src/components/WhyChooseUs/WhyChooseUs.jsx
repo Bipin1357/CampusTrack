@@ -12,22 +12,22 @@ function WhyChooseUs() {
           <div className="why-card reveal in reveal-delay-1">
             <div className="why-icon">🗂️</div>
             <h3>Stay Organized</h3>
-            <p>Keep attendance, syllabus, and results in one place.</p>
+            <p>Keep attendance, timetables, and academic records in one place.</p>
           </div>
           <div className="why-card reveal in reveal-delay-2">
             <div className="why-icon">⏱️</div>
             <h3>Save Time</h3>
-            <p>No spreadsheets or scattered notes to maintain.</p>
+            <p>No spreadsheets, manual calculators, or scattered notes.</p>
           </div>
           <div className="why-card reveal in reveal-delay-3">
             <div className="why-icon">🧭</div>
             <h3>Stay Ahead</h3>
-            <p>Always know exactly what to study next.</p>
+            <p>Never miss attendance windows or important campus notices.</p>
           </div>
           <div className="why-card reveal in reveal-delay-4">
             <div className="why-icon">🏆</div>
             <h3>Achieve Your Goals</h3>
-            <p>Track your progress every single semester.</p>
+            <p>Track your academic performance across every semester.</p>
           </div>
         </div>
       </div>

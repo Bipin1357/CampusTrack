@@ -9,10 +9,10 @@ function Hero() {
         <div className="hero-left reveal in">
           <span className="eyebrow">Built for college students</span>
           <h1>
-            Manage Your Entire <span className="accent">College Journey</span> in One Place.
+            Manage Your College Life <span className="accent">Smarter</span> with CampusTrack.
           </h1>
           <p className="hero-sub">
-            Track attendance, organize your semester syllabus, monitor your academic progress, store previous semester results, and calculate the GPA you need to achieve your goals — all from one beautifully designed dashboard.
+            CampusTrack helps students stay organized with attendance tracking, interactive timetables, academic record management, notices, profile management, and a modern student dashboard—all in one place.
           </p>
           <div className="hero-cta-row">
             <a href="/login" className="btn btn-primary btn-lg">
@@ -24,7 +24,7 @@ function Hero() {
                   <path d="M1 0.5L7 4L1 7.5V0.5Z" fill="#22C55E" />
                 </svg>
               </span>
-              View Demo
+              Explore Dashboard
             </a>
           </div>
           <div className="trust-row">
@@ -126,28 +126,28 @@ function Hero() {
                       <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
                       <polyline points="17 6 23 6 23 12"></polyline>
                     </svg>
-                    <span>Analytics</span>
+                    <span>Academic Record</span>
                   </div>
                 </div>
               </div>
 
-              {/* Semester Progress */}
+              {/* Today's Classes */}
               <div className="phone-card">
-                <div className="phone-card-label">Semester Progress</div>
+                <div className="phone-card-label">Today's Classes</div>
                 <div className="phone-progress-row">
-                  <span className="phone-progress-val">67%</span>
+                  <span className="phone-progress-val">Data Structures &bull; 9:00 AM</span>
                 </div>
                 <div className="phone-bar-track">
-                  <div className="phone-bar-fill" style={{ width: '67%' }}></div>
+                  <div className="phone-bar-fill" style={{ width: '100%' }}></div>
                 </div>
               </div>
 
-              {/* Grid of Cards (Exams & Subjects) */}
+              {/* Grid of Cards (Weekly Timetable & Academic Records) */}
               <div className="phone-grid-2">
                 <div className="phone-card flex-row">
                   <div>
-                    <div className="phone-card-label">Exams</div>
-                    <div className="phone-stat-val">3</div>
+                    <div className="phone-card-label">Timetable</div>
+                    <div className="phone-stat-val">Today</div>
                   </div>
                   <svg
                     viewBox="0 0 24 24"
@@ -167,8 +167,8 @@ function Hero() {
                 </div>
                 <div className="phone-card flex-row">
                   <div>
-                    <div className="phone-card-label">Subjects</div>
-                    <div className="phone-stat-val">6</div>
+                    <div className="phone-card-label">Records</div>
+                    <div className="phone-stat-val">Active</div>
                   </div>
                   <svg
                     viewBox="0 0 24 24"
@@ -180,8 +180,8 @@ function Hero() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
                   </svg>
                 </div>
               </div>
@@ -192,15 +192,15 @@ function Hero() {
                 <div className="phone-activity-list">
                   <div className="phone-activity-item">
                     <span className="phone-check">✔</span>
-                    <span>Module 3 Completed</span>
+                    <span>Attendance Marked</span>
                   </div>
                   <div className="phone-activity-item">
                     <span className="phone-check">✔</span>
-                    <span>Attendance Updated</span>
+                    <span>Academic Record Added</span>
                   </div>
                   <div className="phone-activity-item">
                     <span className="phone-check">✔</span>
-                    <span>Result Uploaded</span>
+                    <span>Campus Notice Viewed</span>
                   </div>
                 </div>
               </div>
@@ -237,10 +237,10 @@ function Hero() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
-                <span>Subjects</span>
+                <span>Timetable</span>
               </div>
               <div className="phone-nav-item">
                 <svg
@@ -258,7 +258,7 @@ function Hero() {
                   <line x1="16" y1="13" x2="8" y2="13"></line>
                   <line x1="16" y1="17" x2="8" y2="17"></line>
                 </svg>
-                <span>Results</span>
+                <span>Records</span>
               </div>
               <div className="phone-nav-item">
                 <svg

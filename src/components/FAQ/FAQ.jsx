@@ -13,16 +13,16 @@ function FAQ() {
       a: 'Yes. CampusTrack is completely free to use for students — no hidden fees, no credit card required.',
     },
     {
-      q: 'Can I upload previous semester results?',
-      a: 'Absolutely. You can upload and securely store your semester result PDFs in the Result Vault and access them anytime.',
+      q: 'How does attendance marking work?',
+      a: 'Attendance opens automatically after your scheduled class ends for a 50-minute window, allowing you to mark your attendance directly from your dashboard.',
     },
     {
-      q: 'Can I edit attendance later?',
-      a: 'Yes, attendance entries are fully editable, so you can correct mistakes or update past records whenever you need to.',
+      q: 'How do Academic Records work?',
+      a: 'You can record, track, and manage your semester SGPA, CGPA, earned credits, and grade history easily from your student portal.',
     },
     {
       q: 'Is my data secure?',
-      a: "Your academic data is encrypted and stored securely, and it's never shared with third parties.",
+      a: "Your academic data is stored securely and is only accessible by authorized student and administrator accounts.",
     },
   ];
 
