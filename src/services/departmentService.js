@@ -108,7 +108,7 @@ export const departmentService = {
       name: trimmedName,
       code: trimmedCode,
       description: description ? description.trim() : null,
-      color: color || '#6366f1'
+      color: color || '#10B981'
     };
 
     const { data, error } = await supabase
@@ -163,7 +163,7 @@ export const departmentService = {
       name: trimmedName,
       code: trimmedCode,
       description: description ? description.trim() : null,
-      color: color || '#6366f1'
+      color: color || '#10B981'
     };
 
     const { data, error } = await supabase

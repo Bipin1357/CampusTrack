@@ -56,10 +56,10 @@ export default function TodayClassCard({ cls, attendanceRecord, onMarkAttendance
     : null;
 
   return (
-    <Card className="p-6 transition-all duration-300 hover:border-purple-500/30 hover:shadow-[0_0_25px_rgba(168,85,247,0.15)] relative overflow-hidden group">
-      {/* Subtle top accent gradient line */}
+    <Card className="p-6 transition-all duration-300 hover:border-[#10B981]/30 hover:shadow-[0_0_25px_rgba(16,185,129,0.15)] relative overflow-hidden group">
+      {/* Top accent line */}
       <div className={`absolute top-0 left-0 right-0 h-1 transition-all ${
-        currentState === 'Marked' ? 'bg-gradient-to-r from-purple-500 to-indigo-500' :
+        currentState === 'Marked' ? 'bg-gradient-to-r from-[#10B981] to-[#34D399]' :
         currentState === 'Open' ? 'bg-gradient-to-r from-emerald-500 to-teal-400' :
         currentState === 'Pending' ? 'bg-gradient-to-r from-amber-500 to-yellow-400' :
         'bg-gradient-to-r from-rose-500 to-red-600'
@@ -74,8 +74,8 @@ export default function TodayClassCard({ cls, attendanceRecord, onMarkAttendance
             </h3>
 
             {currentState === 'Marked' && (
-              <Badge tone="accent" dot className="bg-purple-500/20 text-purple-300 border-purple-500/30">
-                🟣 Attendance Marked
+              <Badge tone="accent" dot className="bg-[#10B981]/20 text-[#34D399] border-[#10B981]/30">
+                🟢 Attendance Marked
               </Badge>
             )}
             {currentState === 'Open' && (
@@ -102,11 +102,11 @@ export default function TodayClassCard({ cls, attendanceRecord, onMarkAttendance
               {cls.faculty}
             </span>
             <span className="flex items-center gap-2 text-white/90 font-medium">
-              <MapPin className="w-4 h-4 text-purple-400 shrink-0" />
+              <MapPin className="w-4 h-4 text-[#34D399] shrink-0" />
               Room {cls.room || cls.classroom || 'N/A'}
             </span>
             <span className="flex items-center gap-2 text-white/90 font-medium">
-              <Clock className="w-4 h-4 text-purple-400 shrink-0" />
+              <Clock className="w-4 h-4 text-[#34D399] shrink-0" />
               {startTimeFormatted} – {endTimeFormatted}
             </span>
           </div>
@@ -114,7 +114,7 @@ export default function TodayClassCard({ cls, attendanceRecord, onMarkAttendance
           {/* Attendance Window Sub-bar */}
           <div className="pt-2 border-t border-white/5 flex flex-wrap items-center gap-4 text-xs">
             <div className="flex items-center gap-2 bg-white/[0.03] px-3 py-1.5 rounded-lg border border-white/10">
-              <Timer className="w-3.5 h-3.5 text-purple-400" />
+              <Timer className="w-3.5 h-3.5 text-[#34D399]" />
               <span className="text-[var(--color-text-muted)]">Attendance Window:</span>
               <span className="font-semibold text-white">
                 {openTimeStr} – {closeTimeStr}
@@ -132,7 +132,7 @@ export default function TodayClassCard({ cls, attendanceRecord, onMarkAttendance
               </p>
             )}
             {currentState === 'Marked' && (
-              <p className="text-purple-300 font-medium">
+              <p className="text-[#34D399] font-medium">
                 Present &bull; Marked at {markedTimeFormatted || 'Today'}
               </p>
             )}
@@ -156,7 +156,7 @@ export default function TodayClassCard({ cls, attendanceRecord, onMarkAttendance
                 variant="primary"
                 onClick={handleMarkClick}
                 disabled={submitting}
-                className="w-full sm:w-auto px-6 py-2.5 text-sm font-semibold shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:shadow-[0_0_25px_rgba(168,85,247,0.6)] transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-6 py-2.5 text-sm font-semibold shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] transition-all flex items-center justify-center gap-2"
               >
                 {submitting ? (
                   <>
@@ -165,7 +165,7 @@ export default function TodayClassCard({ cls, attendanceRecord, onMarkAttendance
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4 text-purple-200" />
+                    <Sparkles className="w-4 h-4 text-emerald-100" />
                     Mark Attendance
                   </>
                 )}
@@ -175,8 +175,8 @@ export default function TodayClassCard({ cls, attendanceRecord, onMarkAttendance
 
           {currentState === 'Marked' && (
             <div className="flex flex-col items-center lg:items-end gap-1">
-              <div className="px-5 py-2.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 font-semibold text-sm flex items-center gap-2 shadow-[0_0_15px_rgba(168,85,247,0.2)]">
-                <CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0" />
+              <div className="px-5 py-2.5 rounded-xl bg-[#10B981]/15 border border-[#10B981]/30 text-[#34D399] font-semibold text-sm flex items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                <CheckCircle2 className="w-4 h-4 text-[#34D399] shrink-0" />
                 <span>Attendance Submitted</span>
               </div>
               <p className="text-xs text-[var(--color-text-muted)] mt-1">

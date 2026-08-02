@@ -5,7 +5,7 @@ export default function Loader({ size = 'md', className }) {
   return (
     <div
       className={cn(
-        'rounded-full border-white/10 border-t-violet-400 animate-spin',
+        'rounded-full border-white/10 border-t-[#10B981] animate-spin',
         sizes[size],
         className
       )}

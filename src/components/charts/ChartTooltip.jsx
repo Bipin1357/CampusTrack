@@ -1,7 +1,7 @@
 export default function ChartTooltip({ active, payload, label, valueFormatter }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="glass-panel rounded-[var(--radius-sm)] px-3 py-2 shadow-xl shadow-black/40" style={{ background: 'rgba(14,14,21,0.95)' }}>
+    <div className="rounded-[var(--radius-sm)] border border-white/10 px-3 py-2 shadow-xl shadow-black/40" style={{ background: 'rgba(30, 41, 59, 0.95)' }}>
       {label && <p className="text-xs text-[var(--color-text-muted)] mb-1">{label}</p>}
       {payload.map((p, i) => (
         <div key={i} className="flex items-center gap-2 text-xs">

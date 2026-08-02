@@ -8,11 +8,11 @@ const icons = {
 }
 const tones = {
   enrollment: 'text-emerald-300 bg-[var(--color-success-soft)]',
-  notice: 'text-violet-300 bg-[var(--color-accent-soft)]',
+  notice: 'text-[#34D399] bg-[var(--color-accent-soft)]',
   faculty: 'text-cyan-300 bg-[var(--color-info-soft)]',
   attendance: 'text-amber-300 bg-[var(--color-warning-soft)]',
   exam: 'text-rose-300 bg-[var(--color-danger-soft)]',
-  report: 'text-indigo-300 bg-[var(--color-accent-soft)]',
+  report: 'text-emerald-400 bg-[var(--color-accent-soft)]',
 }
 
 export default function ActivityTimeline() {

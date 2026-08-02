@@ -13,7 +13,7 @@ export default function UpcomingEvents() {
           return (
             <div key={e.id} className="flex gap-3 items-start">
               <div className="w-11 h-11 rounded-[var(--radius-sm)] bg-white/5 border border-[var(--color-border)] flex flex-col items-center justify-center shrink-0">
-                <span className="text-[10px] font-medium text-violet-300 uppercase leading-none">{d.toLocaleDateString('en-US', { month: 'short' })}</span>
+                <span className="text-[10px] font-medium text-[#34D399] uppercase leading-none">{d.toLocaleDateString('en-US', { month: 'short' })}</span>
                 <span className="text-sm font-semibold leading-none mt-0.5">{d.getDate()}</span>
               </div>
               <div className="min-w-0">

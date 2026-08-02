@@ -7,19 +7,19 @@ export default function StudentGrowthAreaChart({ data }) {
       <AreaChart data={data} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
         <defs>
           <linearGradient id="studentGrowthFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#6366f1" stopOpacity={0.35} />
-            <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
+            <stop offset="0%" stopColor="#10B981" stopOpacity={0.35} />
+            <stop offset="100%" stopColor="#10B981" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
-        <XAxis dataKey="month" tick={{ fill: '#64647a', fontSize: 11 }} axisLine={false} tickLine={false} />
-        <YAxis tick={{ fill: '#64647a', fontSize: 11 }} axisLine={false} tickLine={false} />
+        <CartesianGrid stroke="#334155" vertical={false} />
+        <XAxis dataKey="month" tick={{ fill: '#CBD5E1', fontSize: 11 }} axisLine={false} tickLine={false} />
+        <YAxis tick={{ fill: '#CBD5E1', fontSize: 11 }} axisLine={false} tickLine={false} />
         <Tooltip content={<ChartTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)' }} />
         <Area
           type="monotone"
           dataKey="students"
           name="Students"
-          stroke="#6366f1"
+          stroke="#10B981"
           strokeWidth={2.5}
           fill="url(#studentGrowthFill)"
         />

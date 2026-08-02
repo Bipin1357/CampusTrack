@@ -1,4 +1,5 @@
 import React from 'react';
+import Logo from '../common/Logo';
 
 function Hero() {
   return (
@@ -61,20 +62,8 @@ function Hero() {
 
             {/* App Header */}
             <div className="phone-app-bar">
-              <div className="phone-brand">
-                <div className="phone-brand-logo">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M4 7L12 3L20 7L12 11L4 7Z" fill="white" />
-                    <path
-                      d="M4 7V17L12 21L20 17V7"
-                      stroke="white"
-                      strokeWidth="1.6"
-                      strokeLinejoin="round"
-                      fill="none"
-                      opacity="0.85"
-                    />
-                  </svg>
-                </div>
+              <div className="phone-brand flex items-center gap-1.5">
+                <Logo className="h-5 w-auto" />
                 <span>CampusTrack</span>
               </div>
               <div className="phone-header-actions">

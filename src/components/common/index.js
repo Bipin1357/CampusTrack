@@ -13,3 +13,5 @@ export { default as Dropdown, DropdownItem, DropdownDivider } from './Dropdown'
 export { default as StatCard } from './StatCard'
 export { default as ChartCard } from './ChartCard'
 export { default as Toggle } from './Toggle'
+export { default as Logo } from './Logo'
+

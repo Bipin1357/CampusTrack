@@ -56,7 +56,7 @@ export default function StudentTimetable() {
             onClick={() => setActiveView('week')}
             className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 ${
               activeView === 'week'
-                ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
+                ? 'bg-[#10B981] text-white shadow-md shadow-emerald-950/30'
                 : 'text-[var(--color-text-secondary)] hover:text-white hover:bg-white/5'
             }`}
           >
@@ -67,7 +67,7 @@ export default function StudentTimetable() {
             onClick={() => setActiveView('today')}
             className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 ${
               activeView === 'today'
-                ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
+                ? 'bg-[#10B981] text-white shadow-md shadow-emerald-950/30'
                 : 'text-[var(--color-text-secondary)] hover:text-white hover:bg-white/5'
             }`}
           >

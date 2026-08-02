@@ -1,25 +1,14 @@
 import React from 'react';
+import Logo from '../common/Logo';
 
 function Footer() {
   return (
     <footer>
       <div className="container">
         <div className="footer-top">
-          <div className="brand">
-            <div className="brand-mark">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M4 7L12 3L20 7L12 11L4 7Z" fill="white" />
-                <path
-                  d="M4 7V17L12 21L20 17V7"
-                  stroke="white"
-                  strokeWidth="1.6"
-                  strokeLinejoin="round"
-                  fill="none"
-                  opacity="0.85"
-                />
-              </svg>
-            </div>
-            CampusTrack
+          <div className="brand flex items-center gap-2.5">
+            <Logo className="h-8 w-auto" />
+            <span>CampusTrack</span>
           </div>
           <div className="footer-links">
             <div className="footer-col">

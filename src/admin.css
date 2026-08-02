@@ -4,43 +4,43 @@
   --font-body: "Inter", ui-sans-serif, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
-  /* Core surfaces */
-  --color-bg-base: #08080d;
-  --color-bg-raised: #0e0e17;
-  --color-bg-sunken: #050508;
-  --color-surface: rgba(255, 255, 255, 0.03);
-  --color-surface-hover: rgba(255, 255, 255, 0.06);
+  /* Core surfaces - Slate Theme */
+  --color-bg-base: #0F172A;
+  --color-bg-raised: #111827;
+  --color-bg-sunken: #0B132B;
+  --color-surface: #1E293B;
+  --color-surface-hover: #334155;
   --color-border: rgba(255, 255, 255, 0.08);
-  --color-border-strong: rgba(255, 255, 255, 0.14);
+  --color-border-strong: rgba(255, 255, 255, 0.16);
 
-  /* Text */
-  --color-text-primary: #f4f4f8;
-  --color-text-secondary: #9c9cb0;
-  --color-text-muted: #64647a;
+  /* Text - Slate Theme */
+  --color-text-primary: #F8FAFC;
+  --color-text-secondary: #CBD5E1;
+  --color-text-muted: #94A3B8;
 
-  /* Accent — indigo to violet */
-  --color-accent-indigo: #4f46e5;
-  --color-accent-violet: #8b5cf6;
-  --color-accent-fuchsia: #a78bfa;
-  --color-accent-soft: rgba(139, 92, 246, 0.12);
+  /* Accent — Emerald Theme */
+  --color-accent-indigo: #10B981;
+  --color-accent-violet: #10B981;
+  --color-accent-fuchsia: #34D399;
+  --color-accent-soft: rgba(16, 185, 129, 0.15);
 
   /* Semantic */
-  --color-success: #22c55e;
-  --color-success-soft: rgba(34, 197, 94, 0.12);
-  --color-warning: #f59e0b;
-  --color-warning-soft: rgba(245, 158, 11, 0.12);
-  --color-danger: #f43f5e;
-  --color-danger-soft: rgba(244, 63, 94, 0.12);
-  --color-info: #06b6d4;
-  --color-info-soft: rgba(6, 182, 212, 0.12);
+  --color-success: #22C55E;
+  --color-success-soft: rgba(34, 197, 94, 0.15);
+  --color-warning: #F59E0B;
+  --color-warning-soft: rgba(245, 158, 11, 0.15);
+  --color-danger: #EF4444;
+  --color-danger-soft: rgba(239, 68, 68, 0.15);
+  --color-info: #3B82F6;
+  --color-info-soft: rgba(59, 130, 246, 0.15);
 
-  /* Chart palette */
-  --color-chart-1: #6366f1;
-  --color-chart-2: #a78bfa;
-  --color-chart-3: #22c55e;
-  --color-chart-4: #f59e0b;
-  --color-chart-5: #06b6d4;
-  --color-chart-6: #f43f5e;
+  /* Chart palette - Emerald & Slate */
+  --color-chart-1: #10B981;
+  --color-chart-2: #34D399;
+  --color-chart-3: #6EE7B7;
+  --color-chart-4: #22C55E;
+  --color-chart-5: #F59E0B;
+  --color-chart-6: #3B82F6;
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -61,8 +61,8 @@
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     background-image:
-      radial-gradient(ellipse 80% 50% at 20% -10%, rgba(79, 70, 229, 0.15), transparent),
-      radial-gradient(ellipse 60% 40% at 100% 0%, rgba(139, 92, 246, 0.10), transparent);
+      radial-gradient(ellipse 80% 50% at 20% -10%, rgba(16, 185, 129, 0.08), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 0%, rgba(52, 211, 153, 0.05), transparent);
     background-attachment: fixed;
   }
   h1, h2, h3, h4, h5, h6 {
@@ -70,7 +70,7 @@
     letter-spacing: -0.02em;
   }
   ::selection {
-    background: rgba(139, 92, 246, 0.35);
+    background: rgba(16, 185, 129, 0.3);
   }
   /* Scrollbar */
   ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -82,7 +82,7 @@
   ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
   :focus-visible {
-    outline: 2px solid var(--color-accent-violet);
+    outline: 2px solid #10B981;
     outline-offset: 2px;
     border-radius: 4px;
   }
@@ -98,38 +98,35 @@
 /* End base */
 /* Component styles */
   .glass-panel {
-    background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: #1E293B;
     border: 1px solid var(--color-border);
   }
 
   .glass-card {
-    background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: #1E293B;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
-    transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   .glass-card:hover {
-    border-color: var(--color-border-strong);
+    border-color: rgba(16, 185, 129, 0.35);
+    box-shadow: 0 4px 20px -2px rgba(16, 185, 129, 0.15);
+    transform: translateY(-2px);
   }
 
   .accent-gradient-text {
-    background: linear-gradient(90deg, #818cf8, #a78bfa, #c4b5fd);
+    background: linear-gradient(90deg, #34D399, #10B981, #6EE7B7);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
 
   .accent-gradient-bg {
-    background: linear-gradient(135deg, var(--color-accent-indigo), var(--color-accent-violet));
+    background: #10B981;
   }
 
-  /* Track rail — signature active-nav motif: a lit rail segment that
-     slides along the sidebar like a train indicator on a transit map */
+  /* Track rail — signature active-nav motif */
   .track-rail {
     position: relative;
   }
@@ -141,9 +138,9 @@
     transform: translateY(-50%);
     width: 3px;
     height: 0%;
-    background: linear-gradient(180deg, var(--color-accent-indigo), var(--color-accent-fuchsia));
+    background: #10B981;
     border-radius: 0 4px 4px 0;
-    box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
     transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .track-rail.is-active::before {

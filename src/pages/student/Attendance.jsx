@@ -121,7 +121,7 @@ export default function StudentAttendance() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="font-display text-xl font-bold text-white flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-purple-400" />
+            <Calendar className="w-5 h-5 text-[#34D399]" />
             Today's Classes
           </h2>
           <span className="text-xs text-[var(--color-text-muted)] font-mono">
@@ -130,12 +130,12 @@ export default function StudentAttendance() {
         </div>
 
         {classes.length === 0 ? (
-          <Card className="p-10 text-center space-y-3 bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-2xl shadow-sm">
-            <div className="w-16 h-16 rounded-full bg-purple-500/10 text-purple-400 flex items-center justify-center mx-auto text-3xl">
+          <Card className="p-10 text-center space-y-3 bg-[#1E293B] border border-white/10 rounded-2xl shadow-sm">
+            <div className="w-16 h-16 rounded-full bg-[#10B981]/15 text-[#34D399] flex items-center justify-center mx-auto text-3xl">
               📅
             </div>
             <h3 className="font-bold text-white text-lg font-display">No classes scheduled today</h3>
-            <p className="text-sm font-medium text-purple-300">Enjoy your free day!</p>
+            <p className="text-sm font-medium text-[#34D399]">Enjoy your free day!</p>
             <p className="text-xs text-[var(--color-text-muted)] max-w-sm mx-auto">
               No attendance needs to be marked today.
             </p>
@@ -163,9 +163,9 @@ export default function StudentAttendance() {
 
       {/* Subject Breakdown & Monthly Trend */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="p-6 flex flex-col h-full border border-[var(--color-border)] rounded-2xl">
+        <Card className="p-6 flex flex-col h-full border border-white/10 rounded-2xl">
           <h3 className="font-display text-lg font-bold text-white mb-4 flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-purple-400" />
+            <BookOpen className="w-5 h-5 text-[#34D399]" />
             Subject Breakdown
           </h3>
           {subjectBreakdown.length === 0 ? (
@@ -201,9 +201,9 @@ export default function StudentAttendance() {
           )}
         </Card>
 
-        <Card className="p-6 flex flex-col h-full border border-[var(--color-border)] rounded-2xl">
+        <Card className="p-6 flex flex-col h-full border border-white/10 rounded-2xl">
           <h3 className="font-display text-lg font-bold text-white mb-4 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-purple-400" />
+            <TrendingUp className="w-5 h-5 text-[#34D399]" />
             Monthly Trend
           </h3>
           <div className="flex-1 h-64 min-h-[250px] -ml-2">

@@ -32,8 +32,7 @@ export default function Modal({ open, isOpen, onClose, title, children, footer, 
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.98 }}
             transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
-            className={cn('relative w-full glass-panel rounded-[var(--radius-lg)] shadow-2xl shadow-black/50 max-h-[85vh] flex flex-col', widths[size])}
-            style={{ background: 'linear-gradient(180deg, #14141f, #0c0c14)' }}
+            className={cn('relative w-full rounded-[var(--radius-lg)] bg-[#1E293B] border border-white/10 shadow-2xl shadow-black/50 max-h-[85vh] flex flex-col', widths[size])}
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border)] shrink-0">
               <h3 className="font-display text-lg font-semibold">{title}</h3>

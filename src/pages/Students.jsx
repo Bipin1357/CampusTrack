@@ -49,14 +49,14 @@ export default function Students() {
             <select
               value={dept}
               onChange={(e) => setDept(e.target.value)}
-              className="bg-white/5 border border-[var(--color-border)] rounded-[var(--radius-sm)] px-3 py-2 text-sm text-[var(--color-text-secondary)] focus:outline-none focus:border-[var(--color-accent-violet)]"
+              className="bg-[#0F172A] border border-[#334155] rounded-[var(--radius-sm)] px-3 py-2 text-sm text-[#F8FAFC] focus:outline-none focus:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/25"
             >
               {departments.map((d) => <option key={d} value={d}>{d}</option>)}
             </select>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="bg-white/5 border border-[var(--color-border)] rounded-[var(--radius-sm)] px-3 py-2 text-sm text-[var(--color-text-secondary)] focus:outline-none focus:border-[var(--color-accent-violet)]"
+              className="bg-[#0F172A] border border-[#334155] rounded-[var(--radius-sm)] px-3 py-2 text-sm text-[#F8FAFC] focus:outline-none focus:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/25"
             >
               {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>

@@ -1,6 +1,6 @@
 import { supabase } from '../supabase/supabaseClient';
 
-const DEPARTMENT_COLORS = ['#6366f1', '#06b6d4', '#22c55e', '#a78bfa', '#f59e0b', '#f43f5e'];
+const DEPARTMENT_COLORS = ['#10B981', '#34D399', '#6EE7B7', '#22C55E', '#059669', '#047857'];
 
 const normalizeStatus = (status) => String(status || '').toLowerCase();
 const isAttended = (status) => ['present', 'late'].includes(normalizeStatus(status));

@@ -27,7 +27,7 @@ export default function DepartmentPieChart({ data }) {
           height={36}
           iconType="circle"
           iconSize={8}
-          formatter={(value) => <span style={{ color: '#9c9cb0', fontSize: 11 }}>{value}</span>}
+          formatter={(value) => <span style={{ color: '#CBD5E1', fontSize: 11 }}>{value}</span>}
         />
       </PieChart>
     </ResponsiveContainer>

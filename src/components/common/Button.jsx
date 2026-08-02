@@ -1,10 +1,10 @@
 import { cn } from '@/lib/utils'
 
 const variants = {
-  primary: 'accent-gradient-bg text-white shadow-lg shadow-indigo-950/40 hover:brightness-110',
-  secondary: 'bg-white/5 text-[var(--color-text-primary)] border border-[var(--color-border)] hover:bg-white/10 hover:border-[var(--color-border-strong)]',
+  primary: 'bg-[#10B981] hover:bg-[#059669] active:bg-[#047857] text-white shadow-sm shadow-emerald-950/20',
+  secondary: 'bg-[#1E293B] text-[var(--color-text-primary)] border border-white/10 hover:bg-[#334155] hover:border-white/20',
   ghost: 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/5',
-  danger: 'bg-[var(--color-danger-soft)] text-rose-300 border border-rose-500/20 hover:bg-rose-500/20',
+  danger: 'bg-rose-500/15 text-rose-400 border border-rose-500/20 hover:bg-rose-500/25',
 }
 
 const sizes = {

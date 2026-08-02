@@ -3,6 +3,7 @@ import { Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft, User } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { signupStudent } from '../services/authService';
+import Logo from '../components/common/Logo';
 
 function Signup() {
   const [fullName, setFullName] = useState('');
@@ -152,19 +153,9 @@ function Signup() {
       </div>
 
       <div className="w-full max-w-md z-10 relative mt-8">
-        <div className="mb-8 text-center">
-          <Link to="/" className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-accent-secondary to-accent-primary shadow-[0_4px_12px_rgba(34,197,94,0.2)] mb-4 hover:scale-105 transition-transform">
-            <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-              <path d="M4 7L12 3L20 7L12 11L4 7Z" fill="white" />
-              <path
-                d="M4 7V17L12 21L20 17V7"
-                stroke="white"
-                strokeWidth="1.6"
-                strokeLinejoin="round"
-                fill="none"
-                opacity="0.85"
-              />
-            </svg>
+        <div className="mb-8 text-center flex flex-col items-center">
+          <Link to="/" className="inline-flex items-center justify-center mb-4 hover:scale-105 transition-transform">
+            <Logo className="h-12 w-auto" />
           </Link>
           <h2 className="text-3xl font-display font-bold text-text-primary">
             Create Account
@@ -174,7 +165,7 @@ function Signup() {
           </p>
         </div>
 
-        <div className="bg-bg-secondary/70 backdrop-blur-xl border border-border-color p-8 rounded-[24px] shadow-2xl transition-all">
+        <div className="bg-[#1E293B] border border-white/10 p-8 rounded-[24px] shadow-2xl transition-all">
           <fieldset disabled={loading} className="disabled:opacity-70 disabled:cursor-not-allowed">
             <form onSubmit={handleSignup} className="space-y-4">
               <div className="space-y-1">
@@ -187,7 +178,7 @@ function Signup() {
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-bg-primary border border-border-color rounded-xl text-text-primary focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-colors placeholder:text-text-secondary/50"
+                    className="w-full pl-11 pr-4 py-3 bg-[#0F172A] border border-[#334155] rounded-xl text-[#F8FAFC] focus:outline-none focus:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/25 transition-all placeholder:text-[#94A3B8]"
                     placeholder="John Doe"
                   />
                 </div>
@@ -204,7 +195,7 @@ function Signup() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-bg-primary border border-border-color rounded-xl text-text-primary focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-colors placeholder:text-text-secondary/50"
+                    className="w-full pl-11 pr-4 py-3 bg-[#0F172A] border border-[#334155] rounded-xl text-[#F8FAFC] focus:outline-none focus:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/25 transition-all placeholder:text-[#94A3B8]"
                     placeholder="student@college.edu"
                   />
                 </div>
@@ -221,7 +212,7 @@ function Signup() {
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-11 pr-12 py-3 bg-bg-primary border border-border-color rounded-xl text-text-primary focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-colors placeholder:text-text-secondary/50"
+                    className="w-full pl-11 pr-12 py-3 bg-[#0F172A] border border-[#334155] rounded-xl text-[#F8FAFC] focus:outline-none focus:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/25 transition-all placeholder:text-[#94A3B8]"
                     placeholder="••••••••"
                   />
                   <button
@@ -245,7 +236,7 @@ function Signup() {
                     type={showPassword ? 'text' : 'password'}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full pl-11 pr-12 py-3 bg-bg-primary border border-border-color rounded-xl text-text-primary focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-colors placeholder:text-text-secondary/50"
+                    className="w-full pl-11 pr-12 py-3 bg-[#0F172A] border border-[#334155] rounded-xl text-[#F8FAFC] focus:outline-none focus:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/25 transition-all placeholder:text-[#94A3B8]"
                     placeholder="••••••••"
                   />
                 </div>
@@ -254,7 +245,7 @@ function Signup() {
 
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-accent-primary hover:bg-accent-hover text-[#0D0D0D] rounded-xl font-semibold transition-all mt-6"
+                className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-[#10B981] hover:bg-[#059669] active:bg-[#047857] text-white rounded-xl font-semibold transition-all mt-6 shadow-lg shadow-emerald-950/20"
               >
                 {loading && <Loader2 className="h-5 w-5 animate-spin" />}
                 {loading ? 'Creating Account...' : 'Create Account'}
@@ -264,7 +255,7 @@ function Signup() {
             <div className="mt-6 text-center">
               <p className="text-sm text-text-secondary">
                 Already have an account?{' '}
-                <Link to="/login" className="text-accent-primary hover:text-accent-hover font-medium transition-colors">
+                <Link to="/login" className="text-[#10B981] hover:text-[#059669] font-medium transition-colors">
                   Sign In
                 </Link>
               </p>

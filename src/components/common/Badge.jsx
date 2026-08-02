@@ -6,7 +6,7 @@ const tones = {
   warning: 'bg-[var(--color-warning-soft)] text-amber-300 border-amber-500/20',
   danger: 'bg-[var(--color-danger-soft)] text-rose-300 border-rose-500/20',
   info: 'bg-[var(--color-info-soft)] text-cyan-300 border-cyan-500/20',
-  accent: 'bg-[var(--color-accent-soft)] text-violet-300 border-violet-500/20',
+  accent: 'bg-emerald-500/15 text-[#34D399] border-emerald-500/20',
 }
 
 export default function Badge({ children, tone = 'neutral', dot = false, className }) {
@@ -24,7 +24,7 @@ export default function Badge({ children, tone = 'neutral', dot = false, classNa
         'bg-amber-400': tone === 'warning',
         'bg-rose-400': tone === 'danger',
         'bg-cyan-400': tone === 'info',
-        'bg-violet-400': tone === 'accent',
+        'bg-[#10B981]': tone === 'accent',
       })} />}
       {children}
     </span>

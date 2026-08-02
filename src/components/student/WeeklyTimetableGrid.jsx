@@ -82,12 +82,12 @@ export default function WeeklyTimetableGrid({ classes = [], highlightToday = fal
   ])).sort((a, b) => timeToMinutes(a.split(' - ')[0]) - timeToMinutes(b.split(' - ')[0]));
 
   return (
-    <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-[24px] p-5 sm:p-6 space-y-6 shadow-xl backdrop-blur-xl">
+    <div className="bg-[#1E293B] border border-white/10 rounded-[24px] p-5 sm:p-6 space-y-6 shadow-xl backdrop-blur-xl">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[var(--color-border)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-white/10">
         <div>
           <h2 className="text-xl font-display font-bold text-white flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-purple-400" />
+            <BookOpen className="w-5 h-5 text-[#34D399]" />
             {title}
           </h2>
           <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">
@@ -98,7 +98,7 @@ export default function WeeklyTimetableGrid({ classes = [], highlightToday = fal
         {/* Legend */}
         <div className="flex items-center gap-3 text-xs text-[var(--color-text-secondary)]">
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-purple-500 animate-pulse shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
             Live Now
           </span>
           <span className="flex items-center gap-1.5">
@@ -106,7 +106,7 @@ export default function WeeklyTimetableGrid({ classes = [], highlightToday = fal
             Lab
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-purple-400" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#34D399]" />
             Theory
           </span>
         </div>
@@ -127,14 +127,14 @@ export default function WeeklyTimetableGrid({ classes = [], highlightToday = fal
                 onClick={() => setSelectedMobileDay(day)}
                 className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                   isSelected
-                    ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/30'
+                    ? 'bg-[#10B981] text-white shadow-lg shadow-emerald-950/30'
                     : isToday
-                    ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                    ? 'bg-[#10B981]/20 text-[#34D399] border border-[#10B981]/30'
                     : 'bg-white/5 text-[var(--color-text-secondary)] hover:bg-white/10'
                 }`}
               >
                 {day.substring(0, 3)}
-                {isToday && <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />}
+                {isToday && <span className="w-1.5 h-1.5 rounded-full bg-[#34D399]" />}
                 {hasClasses && !isToday && <span className="w-1.5 h-1.5 rounded-full bg-white/40" />}
               </button>
             );
@@ -162,12 +162,12 @@ export default function WeeklyTimetableGrid({ classes = [], highlightToday = fal
                   key={cls.id}
                   className={`p-4 rounded-2xl transition-all duration-300 relative overflow-hidden ${
                     ongoing
-                      ? 'bg-purple-950/40 border-2 border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.4)]'
-                      : 'bg-white/[0.03] border border-white/10 hover:border-purple-500/40'
+                      ? 'bg-emerald-950/50 border-2 border-[#10B981] shadow-[0_0_20px_rgba(16,185,129,0.4)]'
+                      : 'bg-white/[0.03] border border-white/10 hover:border-[#10B981]/40'
                   }`}
                 >
                   {ongoing && (
-                    <div className="absolute top-0 right-0 bg-purple-500 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-bl-lg flex items-center gap-1">
+                    <div className="absolute top-0 right-0 bg-[#10B981] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-bl-lg flex items-center gap-1">
                       <Sparkles className="w-3 h-3 animate-spin" /> LIVE NOW
                     </div>
                   )}
@@ -192,15 +192,15 @@ export default function WeeklyTimetableGrid({ classes = [], highlightToday = fal
 
                   <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-white/10 text-xs text-[var(--color-text-secondary)]">
                     <div className="flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                      <Clock className="w-3.5 h-3.5 text-[#34D399] shrink-0" />
                       <span>{cls.start_time?.substring(0, 5)} - {cls.end_time?.substring(0, 5)}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                      <MapPin className="w-3.5 h-3.5 text-[#34D399] shrink-0" />
                       <span>{cls.classroom}</span>
                     </div>
                     <div className="flex items-center gap-1.5 col-span-2">
-                      <User className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                      <User className="w-3.5 h-3.5 text-[#34D399] shrink-0" />
                       <span className="truncate">{cls.faculty_name}</span>
                     </div>
                   </div>
@@ -216,7 +216,7 @@ export default function WeeklyTimetableGrid({ classes = [], highlightToday = fal
         <table className="w-full border-collapse min-w-[900px]">
           <thead>
             <tr>
-              <th className="p-3 text-left text-xs font-semibold text-[var(--color-text-muted)] border-b border-[var(--color-border)] w-28">
+              <th className="p-3 text-left text-xs font-semibold text-[var(--color-text-muted)] border-b border-white/10 w-28">
                 Time Slot
               </th>
               {DAYS.map(day => {
@@ -224,16 +224,16 @@ export default function WeeklyTimetableGrid({ classes = [], highlightToday = fal
                 return (
                   <th
                     key={day}
-                    className={`p-3 text-center text-xs font-semibold border-b border-[var(--color-border)] ${
+                    className={`p-3 text-center text-xs font-semibold border-b border-white/10 ${
                       isToday
-                        ? 'text-purple-400 bg-purple-500/10 rounded-t-xl border-purple-500/30'
+                        ? 'text-[#34D399] bg-[#10B981]/10 rounded-t-xl border-[#10B981]/30'
                         : 'text-white'
                     }`}
                   >
                     <div className="flex items-center justify-center gap-1.5">
                       {day}
                       {isToday && (
-                        <span className="w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+                        <span className="w-2 h-2 rounded-full bg-[#34D399] shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
                       )}
                     </div>
                   </th>
@@ -258,7 +258,7 @@ export default function WeeklyTimetableGrid({ classes = [], highlightToday = fal
                     <td
                       key={day}
                       className={`p-2 align-top transition-colors min-w-[130px] ${
-                        isToday ? 'bg-purple-500/[0.02]' : ''
+                        isToday ? 'bg-[#10B981]/[0.03]' : ''
                       }`}
                     >
                       {daySlotClasses.length === 0 ? (
@@ -276,12 +276,12 @@ export default function WeeklyTimetableGrid({ classes = [], highlightToday = fal
                                 key={cls.id}
                                 className={`p-2.5 rounded-xl transition-all duration-300 relative group/card ${
                                   ongoing
-                                    ? 'bg-purple-950/60 border-2 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.5)] scale-[1.02] z-10'
-                                    : 'bg-white/[0.04] border border-white/10 hover:border-purple-500/40 hover:bg-white/[0.07]'
+                                    ? 'bg-emerald-950/60 border-2 border-[#10B981] shadow-[0_0_15px_rgba(16,185,129,0.5)] scale-[1.02] z-10'
+                                    : 'bg-white/[0.04] border border-white/10 hover:border-[#10B981]/40 hover:bg-white/[0.07]'
                                 }`}
                               >
                                 {ongoing && (
-                                  <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-purple-500 rounded-full animate-ping" />
+                                  <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-[#10B981] rounded-full animate-ping" />
                                 )}
 
                                 <div className="flex items-center justify-between gap-1 mb-1">
@@ -293,7 +293,7 @@ export default function WeeklyTimetableGrid({ classes = [], highlightToday = fal
                                       LAB
                                     </span>
                                   ) : (
-                                    <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                                    <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-[#10B981]/20 text-[#34D399] border border-[#10B981]/30">
                                       TH
                                     </span>
                                   )}
@@ -304,7 +304,7 @@ export default function WeeklyTimetableGrid({ classes = [], highlightToday = fal
                                     👨‍🏫 {cls.faculty_name}
                                   </p>
                                   <p className="flex items-center gap-1 text-[var(--color-text-muted)] text-[10px]">
-                                    <MapPin className="w-3 h-3 text-purple-400 shrink-0" />
+                                    <MapPin className="w-3 h-3 text-[#34D399] shrink-0" />
                                     {cls.classroom}
                                   </p>
                                 </div>

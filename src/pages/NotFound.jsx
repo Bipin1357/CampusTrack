@@ -6,7 +6,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-center px-6 bg-[var(--color-bg-base)]">
       <div className="w-16 h-16 rounded-2xl bg-[var(--color-accent-soft)] flex items-center justify-center mb-5">
-        <Compass className="w-7 h-7 text-violet-300" />
+        <Compass className="w-7 h-7 text-[#34D399]" />
       </div>
       <h1 className="font-display text-3xl font-semibold mb-2">Page not found</h1>
       <p className="text-sm text-[var(--color-text-secondary)] max-w-sm mb-6">

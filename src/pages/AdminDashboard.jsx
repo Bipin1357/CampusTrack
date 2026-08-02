@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { LogOut, Users, Settings } from 'lucide-react';
+import Logo from '../components/common/Logo';
 
 function AdminDashboard() {
   const { currentUser, logout } = useAuth();
@@ -10,10 +11,8 @@ function AdminDashboard() {
       <header className="border-b border-border-color bg-bg-secondary/50 backdrop-blur-xl sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 font-display font-bold">
-            <div className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center text-white">
-              <Settings className="w-4 h-4" />
-            </div>
-            Admin Portal
+            <Logo className="h-8 w-auto" />
+            <span>Admin Portal</span>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-text-secondary">

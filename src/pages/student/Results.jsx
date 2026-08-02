@@ -86,7 +86,7 @@ export default function StudentResults() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-semibold text-white flex items-center gap-2">
-            <Award className="w-6 h-6 text-purple-400" />
+            <Award className="w-6 h-6 text-[#34D399]" />
             Academic Records & Results
           </h1>
           <p className="text-sm text-[var(--color-text-secondary)] mt-1">
@@ -101,9 +101,9 @@ export default function StudentResults() {
 
       {/* Top 4 Statistics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-[20px] p-5 flex flex-col hover:border-purple-500/40 transition-all">
+        <div className="bg-[#1E293B] border border-white/10 rounded-[20px] p-5 flex flex-col hover:border-[#10B981]/40 transition-all">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-[#10B981]/15 text-[#34D399] flex items-center justify-center">
               <Award className="w-5 h-5" />
             </div>
             <span className="text-xs font-semibold text-[var(--color-text-secondary)] tracking-wider uppercase">
@@ -111,12 +111,12 @@ export default function StudentResults() {
             </span>
           </div>
           <div className="mt-auto">
-            <div className="text-3xl font-bold font-display text-purple-400">{stats.cgpa}</div>
+            <div className="text-3xl font-bold font-display text-[#34D399]">{stats.cgpa}</div>
             <p className="text-xs text-[var(--color-text-muted)] mt-1">Weighted cumulative grade</p>
           </div>
         </div>
 
-        <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-[20px] p-5 flex flex-col hover:border-purple-500/40 transition-all">
+        <div className="bg-[#1E293B] border border-white/10 rounded-[20px] p-5 flex flex-col hover:border-[#10B981]/40 transition-all">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
               <BookOpen className="w-5 h-5" />
@@ -131,7 +131,7 @@ export default function StudentResults() {
           </div>
         </div>
 
-        <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-[20px] p-5 flex flex-col hover:border-purple-500/40 transition-all">
+        <div className="bg-[#1E293B] border border-white/10 rounded-[20px] p-5 flex flex-col hover:border-[#10B981]/40 transition-all">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
               <TrendingUp className="w-5 h-5" />
@@ -146,9 +146,9 @@ export default function StudentResults() {
           </div>
         </div>
 
-        <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-[20px] p-5 flex flex-col hover:border-purple-500/40 transition-all">
+        <div className="bg-[#1E293B] border border-white/10 rounded-[20px] p-5 flex flex-col hover:border-[#10B981]/40 transition-all">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-violet-500/10 text-violet-400 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-[#10B981]/15 text-[#34D399] flex items-center justify-center">
               <GraduationCap className="w-5 h-5" />
             </div>
             <span className="text-xs font-semibold text-[var(--color-text-secondary)] tracking-wider uppercase">
@@ -164,8 +164,8 @@ export default function StudentResults() {
 
       {/* Empty State Banner if no records exist at all */}
       {!hasRecords && (
-        <div className="bg-[var(--color-bg-secondary)] border border-dashed border-purple-500/30 rounded-[24px] p-10 text-center space-y-4 shadow-xl backdrop-blur-xl">
-          <div className="w-16 h-16 rounded-full bg-purple-500/10 text-purple-400 flex items-center justify-center mx-auto">
+        <div className="bg-[#1E293B] border border-dashed border-[#10B981]/30 rounded-[24px] p-10 text-center space-y-4 shadow-xl backdrop-blur-xl">
+          <div className="w-16 h-16 rounded-full bg-[#10B981]/15 text-[#34D399] flex items-center justify-center mx-auto">
             <Sparkles className="w-8 h-8" />
           </div>
           <div>
@@ -183,7 +183,7 @@ export default function StudentResults() {
       {/* 8 Semester Cards Grid */}
       <div className="space-y-4">
         <h2 className="text-lg font-bold text-white font-display flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-purple-400" />
+          <Calendar className="w-5 h-5 text-[#34D399]" />
           Semester Breakdown
         </h2>
 
@@ -195,10 +195,10 @@ export default function StudentResults() {
               return (
                 <div
                   key={semNum}
-                  className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] hover:border-purple-500/40 rounded-[20px] p-5 flex flex-col justify-between transition-all duration-300 relative group overflow-hidden"
+                  className="bg-[#1E293B] border border-white/10 hover:border-[#10B981]/40 rounded-[20px] p-5 flex flex-col justify-between transition-all duration-300 relative group overflow-hidden"
                 >
                   <div className="flex justify-between items-start">
-                    <span className="text-xs font-semibold text-purple-400 uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-[#34D399] uppercase tracking-wider">
                       Semester {semNum}
                     </span>
                     <button
@@ -228,7 +228,7 @@ export default function StudentResults() {
             return (
               <div
                 key={semNum}
-                className="bg-white/[0.02] border border-dashed border-white/10 hover:border-purple-500/30 rounded-[20px] p-5 flex flex-col justify-between transition-all duration-300"
+                className="bg-white/[0.02] border border-dashed border-white/10 hover:border-[#10B981]/30 rounded-[20px] p-5 flex flex-col justify-between transition-all duration-300"
               >
                 <span className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
                   Semester {semNum}
@@ -240,7 +240,7 @@ export default function StudentResults() {
 
                 <button
                   onClick={() => handleAddClick(semNum)}
-                  className="w-full py-2 px-3 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/20 text-xs font-medium transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full py-2 px-3 rounded-xl bg-[#10B981]/15 hover:bg-[#10B981]/25 text-[#34D399] border border-[#10B981]/20 text-xs font-medium transition-colors flex items-center justify-center gap-1.5"
                 >
                   <Plus className="w-3.5 h-3.5" /> Add GPA
                 </button>
@@ -252,13 +252,13 @@ export default function StudentResults() {
 
       {/* Detailed Academic History Table */}
       {hasRecords && (
-        <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-[24px] p-6 space-y-4">
+        <div className="bg-[#1E293B] border border-white/10 rounded-[24px] p-6 space-y-4">
           <h3 className="text-lg font-bold text-white font-display">Detailed Academic History</h3>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-[var(--color-border)] text-xs text-[var(--color-text-muted)] uppercase">
+                <tr className="border-b border-white/10 text-xs text-[#94A3B8] uppercase">
                   <th className="py-3 px-4">Semester</th>
                   <th className="py-3 px-4">SGPA</th>
                   <th className="py-3 px-4">Credits Earned</th>
@@ -270,9 +270,9 @@ export default function StudentResults() {
                 {[...records]
                   .sort((a, b) => b.semester - a.semester)
                   .map((rec) => (
-                    <tr key={rec.id} className="hover:bg-white/[0.02] transition-colors">
+                    <tr key={rec.id} className="hover:bg-[#10B981]/[0.05] transition-colors">
                       <td className="py-3.5 px-4 font-medium text-white">Semester {rec.semester}</td>
-                      <td className="py-3.5 px-4 font-bold text-purple-400">{Number(rec.sgpa).toFixed(2)}</td>
+                      <td className="py-3.5 px-4 font-bold text-[#34D399]">{Number(rec.sgpa).toFixed(2)}</td>
                       <td className="py-3.5 px-4 text-white">{rec.credits_earned}</td>
                       <td className="py-3.5 px-4 text-xs text-[var(--color-text-muted)] font-mono">
                         {rec.updated_at

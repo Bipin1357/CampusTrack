@@ -21,8 +21,8 @@ export default function StatCard({ label, value, unit, delta, trend, sparkline =
           </p>
         </div>
         {Icon && (
-          <div className="w-9 h-9 rounded-[var(--radius-sm)] bg-[var(--color-accent-soft)] flex items-center justify-center shrink-0">
-            <Icon className="w-4.5 h-4.5 text-violet-300" />
+          <div className="w-9 h-9 rounded-[var(--radius-sm)] bg-[#10B981]/15 flex items-center justify-center shrink-0">
+            <Icon className="w-4.5 h-4.5 text-[#34D399]" />
           </div>
         )}
       </div>

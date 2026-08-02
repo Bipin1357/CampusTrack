@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { LogOut, LayoutDashboard, User } from 'lucide-react';
+import Logo from '../components/common/Logo';
 
 function StudentDashboard() {
   const { currentUser, logout } = useAuth();
@@ -10,12 +11,8 @@ function StudentDashboard() {
       <header className="border-b border-border-color bg-bg-secondary/50 backdrop-blur-xl sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 font-display font-bold">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-secondary to-accent-primary flex items-center justify-center text-white">
-              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                <path d="M4 7L12 3L20 7L12 11L4 7Z" fill="white" />
-              </svg>
-            </div>
-            Student Portal
+            <Logo className="h-8 w-auto" />
+            <span>Student Portal</span>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-text-secondary">

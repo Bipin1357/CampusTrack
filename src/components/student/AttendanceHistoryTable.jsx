@@ -6,8 +6,8 @@ import { Calendar, User, BookOpen, Clock, History } from 'lucide-react';
 export default function AttendanceHistoryTable({ history = [] }) {
   if (!history || history.length === 0) {
     return (
-      <Card className="p-8 text-center space-y-3 bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-2xl">
-        <div className="w-12 h-12 rounded-full bg-purple-500/10 text-purple-400 flex items-center justify-center mx-auto">
+      <Card className="p-8 text-center space-y-3 bg-[#1E293B] border border-white/10 rounded-2xl">
+        <div className="w-12 h-12 rounded-full bg-[#10B981]/15 text-[#34D399] flex items-center justify-center mx-auto">
           <History className="w-6 h-6" />
         </div>
         <h4 className="font-semibold text-white text-base font-display">No Attendance History Found</h4>
@@ -53,11 +53,11 @@ export default function AttendanceHistoryTable({ history = [] }) {
   };
 
   return (
-    <Card className="overflow-hidden border border-[var(--color-border)] rounded-2xl">
-      <div className="p-5 border-b border-[var(--color-border)] flex items-center justify-between">
+    <Card className="overflow-hidden border border-white/10 rounded-2xl bg-[#1E293B]">
+      <div className="p-5 border-b border-white/10 flex items-center justify-between">
         <div>
           <h3 className="text-lg font-bold text-white font-display flex items-center gap-2">
-            <History className="w-5 h-5 text-purple-400" />
+            <History className="w-5 h-5 text-[#34D399]" />
             Attendance History
           </h3>
           <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">
@@ -69,30 +69,30 @@ export default function AttendanceHistoryTable({ history = [] }) {
 
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm text-[var(--color-text-secondary)]">
-          <thead className="bg-white/[0.02] text-xs uppercase font-semibold text-white/70 tracking-wider border-b border-white/5">
+          <thead className="bg-[#111827] text-xs uppercase font-semibold text-white/70 tracking-wider border-b border-white/10">
             <tr>
               <th className="px-6 py-4">
                 <span className="flex items-center gap-2">
-                  <Calendar className="w-3.5 h-3.5 text-purple-400" />
+                  <Calendar className="w-3.5 h-3.5 text-[#34D399]" />
                   Date
                 </span>
               </th>
               <th className="px-6 py-4">
                 <span className="flex items-center gap-2">
-                  <BookOpen className="w-3.5 h-3.5 text-purple-400" />
+                  <BookOpen className="w-3.5 h-3.5 text-[#34D399]" />
                   Subject
                 </span>
               </th>
               <th className="px-6 py-4">
                 <span className="flex items-center gap-2">
-                  <User className="w-3.5 h-3.5 text-purple-400" />
+                  <User className="w-3.5 h-3.5 text-[#34D399]" />
                   Faculty
                 </span>
               </th>
               <th className="px-6 py-4">Status</th>
               <th className="px-6 py-4">
                 <span className="flex items-center gap-2">
-                  <Clock className="w-3.5 h-3.5 text-purple-400" />
+                  <Clock className="w-3.5 h-3.5 text-[#34D399]" />
                   Time Marked
                 </span>
               </th>

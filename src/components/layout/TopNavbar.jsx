@@ -38,7 +38,7 @@ export default function TopNavbar({ onOpenMobile }) {
   }
 
   return (
-    <header className="h-16 shrink-0 flex items-center gap-3 px-4 lg:px-6 border-b border-[var(--color-border)] bg-[var(--color-bg-raised)]/60 backdrop-blur-xl sticky top-0 z-30">
+    <header className="h-16 shrink-0 flex items-center gap-3 px-4 lg:px-6 border-b border-white/10 bg-[#111827] sticky top-0 z-30">
       <button
         onClick={onOpenMobile}
         className="lg:hidden w-9 h-9 rounded-md flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-white/5"
@@ -67,7 +67,7 @@ export default function TopNavbar({ onOpenMobile }) {
           trigger={
             <button className="relative w-9 h-9 rounded-md flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-white transition-colors">
               <MessageSquare className="w-[18px] h-[18px]" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-violet-400" />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#10B981]" />
             </button>
           }
         >
@@ -80,14 +80,14 @@ export default function TopNavbar({ onOpenMobile }) {
           trigger={
             <button className="relative w-9 h-9 rounded-md flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-white transition-colors">
               <Bell className="w-[18px] h-[18px]" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-rose-400" />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#10B981]" />
             </button>
           }
           className="min-w-[280px]"
         >
           <div className="px-3.5 py-2 flex items-center justify-between">
             <span className="text-xs font-medium text-[var(--color-text-muted)]">Notifications</span>
-            <Badge tone="danger">{notifications.length}</Badge>
+            <Badge tone="accent">{notifications.length}</Badge>
           </div>
           {notifications.map((n) => (
             <DropdownItem key={n.id}>

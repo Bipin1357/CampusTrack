@@ -60,8 +60,8 @@ export default function StudentDashboard() {
       value: stats.completedSemesters > 0 ? `CGPA: ${stats.cgpa}` : 'No Records',
       desc: stats.completedSemesters > 0 ? `${stats.completedSemesters} terms • ${stats.totalCredits} credits` : 'Add first semester GPA',
       icon: FileText,
-      color: 'text-violet-400',
-      bg: 'bg-violet-400/10',
+      color: 'text-[#34D399]',
+      bg: 'bg-[#10B981]/15',
     },
     {
       title: 'Profile Completion',
@@ -87,7 +87,7 @@ export default function StudentDashboard() {
         {cards.map((card, idx) => (
           <div
             key={idx}
-            className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-[20px] p-5 flex flex-col hover:border-purple-500/40 transition-all duration-200"
+            className="bg-[#1E293B] border border-white/10 rounded-[20px] p-5 flex flex-col hover:border-[#10B981]/40 transition-all duration-200"
           >
             <div className="flex items-center gap-3 mb-4">
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${card.bg}`}>

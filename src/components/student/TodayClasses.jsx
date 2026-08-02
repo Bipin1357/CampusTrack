@@ -48,11 +48,11 @@ export default function TodayClasses() {
   const currentDayName = timetableService.getCurrentWeekday();
 
   return (
-    <Card className="p-6 space-y-4 bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-[24px]">
-      <div className="flex items-center justify-between pb-3 border-b border-[var(--color-border)]">
+    <Card className="p-6 space-y-4 bg-[#1E293B] border border-white/10 rounded-[24px]">
+      <div className="flex items-center justify-between pb-3 border-b border-white/10">
         <div>
           <h3 className="font-display font-bold text-white text-lg flex items-center gap-2">
-            <Clock className="w-5 h-5 text-purple-400" />
+            <Clock className="w-5 h-5 text-[#34D399]" />
             Today's Classes
           </h3>
           <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">{currentDayName}</p>
@@ -62,7 +62,7 @@ export default function TodayClasses() {
 
       {classes.length === 0 ? (
         <div className="py-10 text-center space-y-2">
-          <div className="w-12 h-12 rounded-full bg-purple-500/10 text-purple-400 flex items-center justify-center mx-auto">
+          <div className="w-12 h-12 rounded-full bg-[#10B981]/15 text-[#34D399] flex items-center justify-center mx-auto">
             <Calendar className="w-6 h-6" />
           </div>
           <h4 className="font-semibold text-white text-base">No classes scheduled today</h4>
@@ -81,13 +81,13 @@ export default function TodayClasses() {
                 key={cls.id}
                 className={`p-4 rounded-xl transition-all duration-300 relative ${
                   isOngoing
-                    ? 'bg-purple-950/40 border-2 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.4)]'
-                    : 'bg-white/[0.03] border border-white/10 hover:border-purple-500/30'
+                    ? 'bg-emerald-950/50 border-2 border-[#10B981] shadow-[0_0_15px_rgba(16,185,129,0.4)]'
+                    : 'bg-white/[0.03] border border-white/10 hover:border-[#10B981]/30'
                 }`}
               >
                 <div className="flex justify-between items-start gap-3">
                   <div>
-                    <span className="text-xs font-mono font-semibold text-purple-400 flex items-center gap-1">
+                    <span className="text-xs font-mono font-semibold text-[#34D399] flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5" />
                       {cls.start_time?.substring(0, 5)} - {cls.end_time?.substring(0, 5)}
                     </span>
@@ -100,11 +100,11 @@ export default function TodayClasses() {
 
                 <div className="mt-3 pt-2.5 border-t border-white/5 flex flex-wrap items-center justify-between text-xs text-[var(--color-text-secondary)] gap-2">
                   <span className="flex items-center gap-1.5 font-medium text-white/90">
-                    <MapPin className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                    <MapPin className="w-3.5 h-3.5 text-[#34D399] shrink-0" />
                     {cls.classroom}
                   </span>
                   <span className="flex items-center gap-1.5 text-[var(--color-text-muted)]">
-                    <User className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                    <User className="w-3.5 h-3.5 text-[#34D399] shrink-0" />
                     {cls.faculty_name}
                   </span>
                 </div>

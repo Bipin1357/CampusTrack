@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Avatar from '../common/Avatar'
+import Logo from '../common/Logo'
 import { useAuth } from '@/context/AuthContext'
 
 const navItems = [
@@ -34,14 +35,9 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
   const content = (
     <div className="h-full flex flex-col">
       <div className={cn('flex items-center gap-2.5 px-5 h-16 shrink-0', collapsed && 'px-0 justify-center')}>
-        <div className="w-8 h-8 rounded-lg accent-gradient-bg flex items-center justify-center shrink-0">
-          <svg viewBox="0 0 32 32" className="w-4.5 h-4.5">
-            <path d="M8 20 L16 8 L24 20" stroke="#fff" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-            <circle cx="16" cy="24" r="2" fill="#c4b5fd" />
-          </svg>
-        </div>
+        <Logo className="h-[36px] w-auto shrink-0" />
         {!collapsed && (
-          <span className="font-display font-semibold text-[15px] tracking-tight whitespace-nowrap">Campus Track</span>
+          <span className="font-display font-semibold text-[15px] tracking-tight whitespace-nowrap">CampusTrack</span>
         )}
         <button
           onClick={onCloseMobile}
@@ -59,16 +55,20 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             onClick={onCloseMobile}
             className={({ isActive }) =>
               cn(
-                'track-rail flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-sm)] text-sm transition-colors',
+                'track-rail flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-sm)] text-sm transition-colors group',
                 isActive
-                  ? 'is-active bg-[var(--color-accent-soft)] text-white font-medium'
-                  : 'text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-white',
+                  ? 'is-active bg-[#10B981]/15 text-[#F8FAFC] font-medium'
+                  : 'text-[#94A3B8] hover:bg-white/5 hover:text-[#F8FAFC]',
                 collapsed && 'justify-center px-0'
               )
             }
           >
-            <Icon className="w-[18px] h-[18px] shrink-0" strokeWidth={2} />
-            {!collapsed && <span className="whitespace-nowrap">{label}</span>}
+            {({ isActive }) => (
+              <>
+                <Icon className={cn('w-[18px] h-[18px] shrink-0 transition-colors', isActive ? 'text-[#34D399]' : 'text-[#94A3B8] group-hover:text-[#F8FAFC]')} strokeWidth={2} />
+                {!collapsed && <span className="whitespace-nowrap">{label}</span>}
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
@@ -79,8 +79,8 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             <Avatar name={adminName} size="sm" />
             {!collapsed && (
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">{adminName}</p>
-                <p className="text-xs text-[var(--color-text-muted)] truncate">{adminRole}</p>
+                <p className="text-sm font-medium text-[#F8FAFC] truncate">{adminName}</p>
+                <p className="text-xs text-[#94A3B8] truncate">{adminRole}</p>
               </div>
             )}
           </div>
@@ -98,7 +98,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         <div className="p-2 border-t border-[var(--color-border)] hidden lg:block">
           <button
             onClick={() => setCollapsed((c) => !c)}
-            className="w-full flex items-center gap-2 justify-center py-1.5 rounded-[var(--radius-sm)] text-[var(--color-text-muted)] hover:bg-white/5 hover:text-white transition-colors text-xs"
+            className="w-full flex items-center gap-2 justify-center py-1.5 rounded-[var(--radius-sm)] text-[#94A3B8] hover:bg-white/5 hover:text-[#F8FAFC] transition-colors text-xs"
           >
             {collapsed ? <ChevronsRight className="w-4 h-4 shrink-0" /> : (<><ChevronsLeft className="w-4 h-4 shrink-0" /> Collapse</>)}
           </button>
@@ -112,7 +112,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
       {/* Desktop */}
       <aside
         className={cn(
-          'hidden lg:block shrink-0 border-r border-[var(--color-border)] bg-[var(--color-bg-raised)]/60 backdrop-blur-xl transition-all duration-200',
+          'hidden lg:block shrink-0 border-r border-white/10 bg-[#111827] transition-all duration-200',
           collapsed ? 'w-[76px]' : 'w-64'
         )}
       >
@@ -135,7 +135,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               animate={{ x: 0 }}
               exit={{ x: -280 }}
               transition={{ type: 'tween', duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-              className="fixed top-0 left-0 h-full w-64 z-50 lg:hidden bg-[var(--color-bg-raised)] border-r border-[var(--color-border)]"
+              className="fixed top-0 left-0 h-full w-64 z-50 lg:hidden bg-[#111827] border-r border-white/10"
             >
               {content}
             </motion.aside>

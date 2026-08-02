@@ -2,12 +2,12 @@ import { cn } from '@/lib/utils'
 import { getInitials } from '@/lib/utils'
 
 const gradients = [
-  'from-indigo-500 to-violet-500',
-  'from-cyan-500 to-blue-500',
+  'from-emerald-600 to-teal-500',
+  'from-cyan-500 to-emerald-500',
   'from-emerald-500 to-teal-500',
-  'from-amber-500 to-orange-500',
-  'from-rose-500 to-pink-500',
-  'from-violet-500 to-fuchsia-500',
+  'from-emerald-500 to-emerald-700',
+  'from-teal-600 to-emerald-500',
+  'from-[#10B981] to-[#059669]',
 ]
 
 function hashName(name) {

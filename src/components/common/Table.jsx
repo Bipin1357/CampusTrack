@@ -10,16 +10,16 @@ export function Table({ children, className }) {
 }
 
 export function THead({ children }) {
-  return <thead className="border-b border-[var(--color-border)]">{children}</thead>
+  return <thead className="bg-[#111827] border-b border-white/[0.08]">{children}</thead>
 }
 
 export function TBody({ children }) {
-  return <tbody className="divide-y divide-[var(--color-border)]">{children}</tbody>
+  return <tbody className="divide-y divide-white/[0.08] bg-[#1E293B]">{children}</tbody>
 }
 
 export function TR({ children, className, ...props }) {
   return (
-    <tr className={cn('transition-colors hover:bg-white/[0.03]', className)} {...props}>
+    <tr className={cn('transition-colors hover:bg-[#10B981]/[0.05]', className)} {...props}>
       {children}
     </tr>
   )
@@ -30,8 +30,8 @@ export function TH({ children, sortable, sortDir, onSort, className }) {
     <th
       onClick={sortable ? onSort : undefined}
       className={cn(
-        'text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-[var(--color-text-muted)] whitespace-nowrap',
-        sortable && 'cursor-pointer select-none hover:text-[var(--color-text-secondary)]',
+        'text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#94A3B8] whitespace-nowrap',
+        sortable && 'cursor-pointer select-none hover:text-[#CBD5E1]',
         className
       )}
     >
@@ -39,8 +39,8 @@ export function TH({ children, sortable, sortDir, onSort, className }) {
         {children}
         {sortable && (
           <span className="inline-flex flex-col -space-y-1">
-            <ChevronUp className={cn('w-3 h-3', sortDir === 'asc' ? 'text-violet-400' : 'text-[var(--color-text-muted)]')} />
-            <ChevronDown className={cn('w-3 h-3', sortDir === 'desc' ? 'text-violet-400' : 'text-[var(--color-text-muted)]')} />
+            <ChevronUp className={cn('w-3 h-3', sortDir === 'asc' ? 'text-[#10B981]' : 'text-[#94A3B8]')} />
+            <ChevronDown className={cn('w-3 h-3', sortDir === 'desc' ? 'text-[#10B981]' : 'text-[#94A3B8]')} />
           </span>
         )}
       </span>

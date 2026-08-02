@@ -247,7 +247,7 @@ export default function TakeAttendanceModal({ isOpen, onClose, onSuccess }) {
         {!loadingStudents && classInfo && (
           <div className="flex items-center gap-3 px-3 py-2 rounded-[var(--radius-sm)] bg-white/5 border border-[var(--color-border)] text-sm animate-in fade-in duration-200">
             <span className="text-[var(--color-text-muted)]">Showing students for</span>
-            <span className="px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30 text-xs font-medium">
+            <span className="px-2 py-0.5 rounded-full bg-[#10B981]/20 text-[#34D399] border border-[#10B981]/30 text-xs font-medium">
               Semester {classInfo.semester}
             </span>
             <span className="px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 text-xs font-medium">

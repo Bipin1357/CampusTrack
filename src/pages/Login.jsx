@@ -3,6 +3,7 @@ import { Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import Logo from '../components/common/Logo';
 
 function Login() {
   const [isLogin, setIsLogin] = useState(true); // toggle between login and forgot password
@@ -107,19 +108,9 @@ function Login() {
       </div>
 
       <div className="w-full max-w-md z-10 relative">
-        <div className="mb-8 text-center">
-          <Link to="/" className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-accent-secondary to-accent-primary shadow-[0_4px_12px_rgba(34,197,94,0.2)] mb-4 hover:scale-105 transition-transform">
-            <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-              <path d="M4 7L12 3L20 7L12 11L4 7Z" fill="white" />
-              <path
-                d="M4 7V17L12 21L20 17V7"
-                stroke="white"
-                strokeWidth="1.6"
-                strokeLinejoin="round"
-                fill="none"
-                opacity="0.85"
-              />
-            </svg>
+        <div className="mb-8 text-center flex flex-col items-center">
+          <Link to="/" className="inline-flex items-center justify-center mb-4 hover:scale-105 transition-transform">
+            <Logo className="h-12 w-auto" />
           </Link>
           <h2 className="text-3xl font-display font-bold text-text-primary">
             {isLogin ? 'Welcome back' : 'Reset Password'}
@@ -131,7 +122,7 @@ function Login() {
           </p>
         </div>
 
-        <div className="bg-bg-secondary/70 backdrop-blur-xl border border-border-color p-8 rounded-[24px] shadow-2xl transition-all">
+        <div className="bg-[#1E293B] border border-white/10 p-8 rounded-[24px] shadow-2xl transition-all">
           <fieldset disabled={loading} className="disabled:opacity-70 disabled:cursor-not-allowed">
             <form onSubmit={isLogin ? handleLogin : handleForgotPassword} className="space-y-5">
               <div className="space-y-2">
@@ -145,7 +136,7 @@ function Login() {
                     value={email}
                     autoFocus
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-bg-primary border border-border-color rounded-xl text-text-primary focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-colors placeholder:text-text-secondary/50"
+                    className="w-full pl-11 pr-4 py-3 bg-[#0F172A] border border-[#334155] rounded-xl text-[#F8FAFC] focus:outline-none focus:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/25 transition-all placeholder:text-[#94A3B8]"
                     placeholder="student@college.edu"
                   />
                 </div>
@@ -160,7 +151,7 @@ function Login() {
                       onClick={() => {
                         setIsLogin(false);
                       }}
-                      className="text-sm text-accent-primary hover:text-accent-hover transition-colors font-medium"
+                      className="text-sm text-[#10B981] hover:text-[#059669] transition-colors font-medium"
                     >
                       Forgot Password?
                     </button>
@@ -173,7 +164,7 @@ function Login() {
                       type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-11 pr-12 py-3 bg-bg-primary border border-border-color rounded-xl text-text-primary focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-colors placeholder:text-text-secondary/50"
+                      className="w-full pl-11 pr-12 py-3 bg-[#0F172A] border border-[#334155] rounded-xl text-[#F8FAFC] focus:outline-none focus:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/25 transition-all placeholder:text-[#94A3B8]"
                       placeholder="••••••••"
                     />
                     <button
@@ -189,7 +180,7 @@ function Login() {
 
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-accent-primary hover:bg-accent-hover text-[#0D0D0D] rounded-xl font-semibold transition-all mt-2"
+                className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-[#10B981] hover:bg-[#059669] active:bg-[#047857] text-white rounded-xl font-semibold transition-all mt-2 shadow-lg shadow-emerald-950/20"
               >
                 {loading && <Loader2 className="h-5 w-5 animate-spin" />}
                 {isLogin ? 'Sign In' : 'Send Reset Link'}

@@ -31,7 +31,7 @@ export default function StudentProfile() {
       {/* Page Title Header */}
       <div>
         <h1 className="font-display text-2xl font-semibold text-white flex items-center gap-2">
-          <User className="w-6 h-6 text-purple-400" />
+          <User className="w-6 h-6 text-[#34D399]" />
           My Profile
         </h1>
         <p className="text-sm text-[var(--color-text-secondary)] mt-1">
@@ -40,13 +40,13 @@ export default function StudentProfile() {
       </div>
 
       {/* Header Overview Card */}
-      <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-[24px] p-6 flex flex-col sm:flex-row gap-6 items-start sm:items-center relative overflow-hidden backdrop-blur-xl shadow-xl hover:border-purple-500/30 transition-all duration-300">
+      <div className="bg-[#1E293B] border border-white/10 rounded-[24px] p-6 flex flex-col sm:flex-row gap-6 items-start sm:items-center relative overflow-hidden backdrop-blur-xl shadow-xl hover:border-[#10B981]/30 transition-all duration-300">
         {/* Glow effect background */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#10B981]/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shrink-0 shadow-lg shadow-purple-500/20 relative">
+        <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/20 relative">
           <User className="w-12 h-12 text-white" />
-          <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 border-2 border-[var(--color-bg-secondary)] flex items-center justify-center">
+          <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 border-2 border-[#1E293B] flex items-center justify-center">
             <ShieldCheck className="w-3.5 h-3.5 text-white" />
           </div>
         </div>
@@ -57,13 +57,13 @@ export default function StudentProfile() {
             <Badge tone="accent">Student</Badge>
           </div>
           <p className="text-sm text-[var(--color-text-secondary)] mt-1 flex items-center gap-1.5">
-            <Mail className="w-4 h-4 text-purple-400" />
+            <Mail className="w-4 h-4 text-[#34D399]" />
             {email}
           </p>
 
           <div className="mt-4 flex flex-wrap gap-2">
             {department && (
-              <span className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-medium flex items-center gap-1">
+              <span className="px-3 py-1 rounded-full bg-[#10B981]/15 border border-[#10B981]/20 text-[#34D399] text-xs font-medium flex items-center gap-1">
                 <GraduationCap className="w-3.5 h-3.5" />
                 {department}
               </span>
@@ -92,9 +92,9 @@ export default function StudentProfile() {
         {/* Left Column (2 Cols on LG): Personal & Academic Cards */}
         <div className="lg:col-span-2 space-y-6">
           {/* Personal Information Card */}
-          <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-[24px] p-6 hover:border-purple-500/30 transition-all duration-300 space-y-4">
-            <h3 className="text-lg font-semibold font-display text-white border-b border-[var(--color-border)] pb-3 flex items-center gap-2">
-              <User className="w-5 h-5 text-purple-400" />
+          <div className="bg-[#1E293B] border border-white/10 rounded-[24px] p-6 hover:border-[#10B981]/30 transition-all duration-300 space-y-4">
+            <h3 className="text-lg font-semibold font-display text-white border-b border-white/10 pb-3 flex items-center gap-2">
+              <User className="w-5 h-5 text-[#34D399]" />
               Personal Information
             </h3>
 
@@ -126,10 +126,10 @@ export default function StudentProfile() {
             </div>
           </div>
 
-          {/* Academic Information Card (Synchronized CGPA & Credits, NO Advisor field) */}
-          <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-[24px] p-6 hover:border-purple-500/30 transition-all duration-300 space-y-4">
-            <h3 className="text-lg font-semibold font-display text-white border-b border-[var(--color-border)] pb-3 flex items-center gap-2">
-              <GraduationCap className="w-5 h-5 text-purple-400" />
+          {/* Academic Information Card */}
+          <div className="bg-[#1E293B] border border-white/10 rounded-[24px] p-6 hover:border-[#10B981]/30 transition-all duration-300 space-y-4">
+            <h3 className="text-lg font-semibold font-display text-white border-b border-white/10 pb-3 flex items-center gap-2">
+              <GraduationCap className="w-5 h-5 text-[#34D399]" />
               Academic Information
             </h3>
 
@@ -163,28 +163,28 @@ export default function StudentProfile() {
 
               <div className="bg-white/[0.02] border border-white/5 p-3.5 rounded-xl">
                 <span className="text-xs text-[var(--color-text-muted)] block mb-1">Credits Earned</span>
-                <span className="text-sm font-medium text-purple-300">{creditsEarned} Credits</span>
+                <span className="text-sm font-medium text-[#34D399]">{creditsEarned} Credits</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right Column (1 Col on LG): Dynamic Shared Profile Completion Card */}
+        {/* Right Column: Profile Completion Card */}
         <div className="space-y-6">
-          <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-[24px] p-6 hover:border-purple-500/30 transition-all duration-300 space-y-5">
-            <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-3">
+          <div className="bg-[#1E293B] border border-white/10 rounded-[24px] p-6 hover:border-[#10B981]/30 transition-all duration-300 space-y-5">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="text-lg font-semibold font-display text-white flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-purple-400" />
+                <Sparkles className="w-5 h-5 text-[#34D399]" />
                 Profile Completion
               </h3>
-              <span className="text-sm font-bold text-purple-400 font-mono">{completion.percentage}%</span>
+              <span className="text-sm font-bold text-[#34D399] font-mono">{completion.percentage}%</span>
             </div>
 
             {/* Progress Bar */}
             <div className="space-y-2">
               <div className="w-full h-3 rounded-full bg-white/5 overflow-hidden p-0.5 border border-white/10">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-purple-600 to-indigo-500 transition-all duration-500 shadow-[0_0_12px_rgba(168,85,247,0.6)]"
+                  className="h-full rounded-full bg-gradient-to-r from-[#10B981] to-[#34D399] transition-all duration-500 shadow-[0_0_12px_rgba(16,185,129,0.6)]"
                   style={{ width: `${completion.percentage}%` }}
                 />
               </div>
@@ -196,19 +196,19 @@ export default function StudentProfile() {
               </div>
             </div>
 
-            {/* Dynamic Checklist Generated From Shared Logic */}
+            {/* Dynamic Checklist */}
             <div className="space-y-2.5 pt-2 max-h-[380px] overflow-y-auto pr-1 scrollbar-thin">
               {completion.items.map((task) => (
                 <div
                   key={task.id}
                   className={`p-3 rounded-xl border transition-all flex items-start gap-3 ${
                     task.completed
-                      ? 'bg-purple-950/20 border-purple-500/30 text-white'
+                      ? 'bg-emerald-950/30 border-[#10B981]/30 text-white'
                       : 'bg-white/[0.02] border-white/5 text-[var(--color-text-secondary)]'
                   }`}
                 >
                   {task.completed ? (
-                    <CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-4 h-4 text-[#34D399] shrink-0 mt-0.5" />
                   ) : (
                     <Circle className="w-4 h-4 text-[var(--color-text-muted)] shrink-0 mt-0.5" />
                   )}
