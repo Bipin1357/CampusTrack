@@ -86,8 +86,16 @@ export const listenToAuthChanges = (callback) => {
     (event, session) => {
       console.log("Auth Event:", event);
       console.log("Session User:", session?.user);
-      callback(session?.user || null);
+
+      // Do not run Supabase queries inside onAuthStateChange. Defer the
+      // application callback until Supabase has finished processing the event.
+      setTimeout(() => {
+        Promise.resolve(callback(session?.user || null)).catch((error) => {
+          console.error("Auth state callback failed:", error);
+        });
+      }, 0);
     }
   );
+
   return () => subscription.unsubscribe();
 };
